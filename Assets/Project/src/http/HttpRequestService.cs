@@ -5,6 +5,7 @@ using Traitorstown.src;
 using Traitorstown.src.http;
 using Traitorstown.src.http.representation;
 using Traitorstown.src.http.request;
+using Traitorstown.src.model;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -33,14 +34,47 @@ namespace Traitorstown.src.http
             }
         }
 
-        public IEnumerator register(string email, string password)
+        public IEnumerator createNewGame(Action<Game> responseHandler)
         {
-            String requestPayload = JsonUtility.ToJson(new RegistrationRequest(email, password));
-            Debug.Log(requestPayload);
+            yield return gameRequest(EndpointsResources.DELIMITER + EndpointsResources.GAMES,
+                "POST",
+                "{}",
+                responseHandler);
+        }
 
+        public IEnumerator register(string email, string password, Action<Player> responseHandler)
+        {
+            yield return userRequest(EndpointsResources.DELIMITER + EndpointsResources.USERS + EndpointsResources.DELIMITER + EndpointsResources.REGISTER,
+                            JsonUtility.ToJson(new RegistrationRequest(email, password)),
+                            responseHandler);
+        }
+
+        public IEnumerator login(string email, string password, Action<Player> responseHandler)
+        {
+            yield return userRequest(EndpointsResources.DELIMITER + EndpointsResources.USERS + EndpointsResources.DELIMITER + EndpointsResources.LOGIN,
+                            JsonUtility.ToJson(new LoginRequest(email, password)),
+                            responseHandler);
+        }
+
+        private IEnumerator gameRequest(string path, string httpVerb, string payload, Action<Game> responseHandler)
+        {
             UnityWebRequest request = UnityWebRequest.Put(
-                Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.USERS + EndpointsResources.DELIMITER + EndpointsResources.REGISTER,
-                requestPayload);
+                Configuration.API_URL + path,
+                payload);
+
+            request.method = httpVerb;
+            yield return makeRequest(request, response =>
+            {
+                GameRepresentation result = GameRepresentation.fromJSON(request.downloadHandler.text);
+                responseHandler(new Game(result.id));
+            });
+        }
+
+        private IEnumerator userRequest(string path, string payload, Action<Player> responseHandler)
+        {
+            UnityWebRequest request = UnityWebRequest.Put(
+                Configuration.API_URL + path,
+                payload);
 
             request.method = "POST";
             yield return makeRequest(request, response =>
@@ -51,21 +85,13 @@ namespace Traitorstown.src.http
                 {
                     token = result.token;
                     PlayerPrefs.SetString(TOKEN, token);
-                    return result;
                 }
 
-                return result;
+                responseHandler(new Player(result.id));
             });
         }
 
-        public IEnumerator createNewGame()
-        {
-            UnityWebRequest request = UnityWebRequest.Put(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES, "{}");
-            request.method = "POST";
-            yield return makeRequest(request);
-        }
-
-        private IEnumerator makeRequest(UnityWebRequest request, Func<object, object> responseHandler = null)
+        private IEnumerator makeRequest(UnityWebRequest request, Action<object> responseHandler = null)
         {
             if (token != null)
             {
@@ -90,7 +116,7 @@ namespace Traitorstown.src.http
                 Debug.Log("Response: " + request.responseCode + " Details: " + request.downloadHandler.text);
                 if (request.responseCode == 200)
                 {
-                    yield return responseHandler?.Invoke(request.downloadHandler.text);
+                    responseHandler?.Invoke(request.downloadHandler.text);
                 }
             }
         }
