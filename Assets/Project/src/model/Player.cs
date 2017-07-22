@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Traitorstown.src.model
 {
-    public class Player
+    public class Player : TraitorsTownObject
     {
         public long Id { get; set; }
 

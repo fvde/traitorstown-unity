@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Traitorstown.src.model;
 using UnityEngine;
 
 namespace Traitorstown.src.http.representation
@@ -9,15 +10,12 @@ namespace Traitorstown.src.http.representation
     public class GameRepresentation
     {
         public long id;
+        public GameStatus status;
 
-        public GameRepresentation(long id)
+        public GameRepresentation(long id, GameStatus status)
         {
             this.id = id;
-        }
-
-        public static GameRepresentation fromJSON(String json)
-        {
-            return JsonUtility.FromJson<GameRepresentation>(json);
+            this.status = status;
         }
     }
 }

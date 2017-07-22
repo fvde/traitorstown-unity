@@ -18,14 +18,6 @@ namespace Traitorstown.src.http
 
         private static HttpRequestService instance = new HttpRequestService();
 
-        private HttpRequestService()
-        {
-            if (PlayerPrefs.HasKey(TOKEN))
-            {
-                token = PlayerPrefs.GetString(TOKEN);
-            }
-        }
-
         public static HttpRequestService Instance
         {
             get
@@ -34,11 +26,27 @@ namespace Traitorstown.src.http
             }
         }
 
+        private HttpRequestService()
+        {
+            if (PlayerPrefs.HasKey(TOKEN))
+            {
+                token = PlayerPrefs.GetString(TOKEN);
+            }
+        }
+
         public IEnumerator createNewGame(Action<Game> responseHandler)
         {
-            yield return gameRequest(EndpointsResources.DELIMITER + EndpointsResources.GAMES,
+            yield return gameRequest(UnityWebRequest.Post(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES, "{}"),
                 "POST",
-                "{}",
+                responseHandler,
+                null);
+        }
+
+        public IEnumerator getOpenGames(Action<List<Game>> responseHandler)
+        {
+            yield return gameRequest(UnityWebRequest.Get(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES + "?status=" + GameStatus.OPEN),
+                "GET",
+                null,
                 responseHandler);
         }
 
@@ -56,17 +64,22 @@ namespace Traitorstown.src.http
                             responseHandler);
         }
 
-        private IEnumerator gameRequest(string path, string httpVerb, string payload, Action<Game> responseHandler)
+        private IEnumerator gameRequest(UnityWebRequest request, string httpVerb, Action<Game> responseHandler, Action<List<Game>> multipleResponseHandler)
         {
-            UnityWebRequest request = UnityWebRequest.Put(
-                Configuration.API_URL + path,
-                payload);
-
             request.method = httpVerb;
             yield return makeRequest(request, response =>
             {
-                GameRepresentation result = GameRepresentation.fromJSON(request.downloadHandler.text);
-                responseHandler(new Game(result.id));
+                if (responseHandler != null)
+                {
+                    GameRepresentation result = JsonUtility.FromJson<GameRepresentation>(request.downloadHandler.text);
+                    responseHandler(new Game(result.id, result.status));
+                }
+
+                if (multipleResponseHandler != null)
+                {
+                    List<GameRepresentation> results = new List<GameRepresentation>(JsonHelper.getJsonArray<GameRepresentation>(request.downloadHandler.text));
+                    multipleResponseHandler(results.ConvertAll(game => new Game(game.id, game.status)));
+                }
             });
         }
 

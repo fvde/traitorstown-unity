@@ -4,13 +4,16 @@ using UnityEngine;
 
 namespace Traitorstown.src.model
 {
-    public class Game
+    public class Game : TraitorsTownObject
     {
         public long Id { get; set; }
 
-        public Game(long id)
+        public GameStatus status;
+
+        public Game(long id, GameStatus status)
         {
             Id = id;
+            this.status = status;
         }
     }
 }
