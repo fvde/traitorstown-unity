@@ -22,4 +22,39 @@ public class GameService : MonoBehaviour {
             games.ForEach(game => Debug.Log(game));
         }));
     }
+
+    public void joinGame(int gameId)
+    {
+        // TODO
+    }
+
+    public void leaveGame()
+    {
+        // TODO
+    }
+
+    public void setReady()
+    {
+        // TODO
+    }
+
+    public void setNotReady()
+    {
+        // TODO
+    }
+
+    public void getCards()
+    {
+        // TODO
+    }
+
+    public void getTurn()
+    {
+        // TODO
+    }
+
+    public void playCard()
+    {
+        // TODO
+    }
 }
