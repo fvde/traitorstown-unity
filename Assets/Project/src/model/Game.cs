@@ -6,11 +6,11 @@ namespace Traitorstown.src.model
 {
     public class Game : TraitorsTownObject
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         public GameStatus status;
 
-        public Game(long id, GameStatus status)
+        public Game(int id, GameStatus status)
         {
             Id = id;
             this.status = status;

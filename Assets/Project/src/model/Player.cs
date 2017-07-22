@@ -6,9 +6,9 @@ namespace Traitorstown.src.model
 {
     public class Player : TraitorsTownObject
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
 
-        public Player(long id)
+        public Player(int id)
         {
             Id = id;
         }

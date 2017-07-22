@@ -34,6 +34,14 @@ namespace Traitorstown.src.http
             }
         }
 
+        public IEnumerator getCurrentGame(int playerId, Action<Game> responseHandler)
+        {
+            yield return gameRequest(UnityWebRequest.Get(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.PLAYERS + EndpointsResources.DELIMITER + playerId + EndpointsResources.DELIMITER + EndpointsResources.GAMES),
+                "GET",
+                responseHandler,
+                null);
+        }
+
         public IEnumerator createNewGame(Action<Game> responseHandler)
         {
             yield return gameRequest(UnityWebRequest.Post(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES, "{}"),
@@ -48,6 +56,22 @@ namespace Traitorstown.src.http
                 "GET",
                 null,
                 responseHandler);
+        }
+
+        public IEnumerator joinGame(int gameId, int playerId, Action<Game> responseHandler)
+        {
+            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES + EndpointsResources.DELIMITER + gameId + EndpointsResources.DELIMITER + EndpointsResources.PLAYERS, JsonUtility.ToJson(new PlayerRequest(playerId))),
+                "POST",
+                responseHandler,
+                null);
+        }
+
+        public IEnumerator leaveGame(int gameId, int playerId, Action<Game> responseHandler)
+        {
+            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES + EndpointsResources.DELIMITER + gameId + EndpointsResources.DELIMITER + EndpointsResources.PLAYERS + EndpointsResources.DELIMITER + playerId, "{}"),
+                "DELETE",
+                responseHandler,
+                null);
         }
 
         public IEnumerator register(string email, string password, Action<Player> responseHandler)
@@ -72,13 +96,13 @@ namespace Traitorstown.src.http
                 if (responseHandler != null)
                 {
                     GameRepresentation result = JsonUtility.FromJson<GameRepresentation>(request.downloadHandler.text);
-                    responseHandler(new Game(result.id, result.status));
+                    responseHandler(new Game((int)result.id, result.status));
                 }
 
                 if (multipleResponseHandler != null)
                 {
                     List<GameRepresentation> results = new List<GameRepresentation>(JsonHelper.getJsonArray<GameRepresentation>(request.downloadHandler.text));
-                    multipleResponseHandler(results.ConvertAll(game => new Game(game.id, game.status)));
+                    multipleResponseHandler(results.ConvertAll(game => new Game((int)game.id, game.status)));
                 }
             });
         }
@@ -100,7 +124,7 @@ namespace Traitorstown.src.http
                     PlayerPrefs.SetString(TOKEN, token);
                 }
 
-                responseHandler(new Player(result.id));
+                responseHandler(new Player((int)result.id));
             });
         }
 
@@ -126,7 +150,7 @@ namespace Traitorstown.src.http
             }
             else
             {
-                Debug.Log("Response: " + request.responseCode + " Details: " + request.downloadHandler.text);
+                Debug.Log("Response: " + request.responseCode + (request.downloadHandler != null ? " Details: " + request.downloadHandler.text : ""));
                 if (request.responseCode == 200)
                 {
                     responseHandler?.Invoke(request.downloadHandler.text);

@@ -1,10 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using Traitorstown.src.game;
 using Traitorstown.src.http;
 using Traitorstown.src.http.representation;
 using Traitorstown.src.model;
 using UnityEngine;
 
 public class GameService : MonoBehaviour {
+
+    private List<Game> openGames = new List<Game>();
+
+    public void getCurrentGame()
+    {
+        PlayerRequired();
+
+        GameState.Instance.GameId = null;
+        StartCoroutine(HttpRequestService.Instance.getCurrentGame(GameState.Instance.PlayerId.Value, game =>
+        {
+            GameState.Instance.GameId = game.Id;
+            Debug.Log("Found current game with id " + game.Id);
+        }));
+    }
 
     public void createNewGame()
     {
@@ -19,18 +35,36 @@ public class GameService : MonoBehaviour {
         StartCoroutine(HttpRequestService.Instance.getOpenGames(games =>
         {
             Debug.Log("Found open games:");
+            openGames.AddRange(games);
             games.ForEach(game => Debug.Log(game));
         }));
     }
 
-    public void joinGame(int gameId)
+    public void joinGame(int gameId = -1)
     {
-        // TODO
+        PlayerRequired();
+
+        if (gameId == -1 && openGames.Count > 0)
+        {
+            gameId = openGames[0].Id;
+        }
+
+        StartCoroutine(HttpRequestService.Instance.joinGame(gameId, GameState.Instance.PlayerId.Value, game =>
+        {
+            GameState.Instance.GameId = game.Id;
+            Debug.Log("Joined game with id " + game.Id);
+        }));
     }
 
     public void leaveGame()
     {
-        // TODO
+        PlayerRequired();
+
+        StartCoroutine(HttpRequestService.Instance.leaveGame(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, game =>
+        {
+            GameState.Instance.GameId = null;
+            Debug.Log("Left game with id " + game.Id);
+        }));
     }
 
     public void setReady()
@@ -56,5 +90,13 @@ public class GameService : MonoBehaviour {
     public void playCard()
     {
         // TODO
+    }
+
+    private void PlayerRequired()
+    {
+        if (!GameState.Instance.PlayerId.HasValue)
+        {
+            throw new Exception("Player required. Login or Register.");
+        }
     }
 }

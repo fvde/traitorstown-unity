@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Traitorstown.src.game;
 using Traitorstown.src.http;
 using Traitorstown.src.http.representation;
 using Traitorstown.src.http.request;
@@ -13,6 +14,7 @@ public class UserService : MonoBehaviour {
     {
         StartCoroutine(HttpRequestService.Instance.register(username, username + DateTime.Now.Millisecond, player =>
         {
+            GameState.Instance.PlayerId = player.Id;
             Debug.Log("Obtained player id " + player.Id);
         }));
     }
@@ -21,6 +23,7 @@ public class UserService : MonoBehaviour {
     {
         StartCoroutine(HttpRequestService.Instance.login(username, username, player =>
         {
+            GameState.Instance.PlayerId = player.Id;
             Debug.Log("Logged in with player " + player.Id);
         }));
     }
