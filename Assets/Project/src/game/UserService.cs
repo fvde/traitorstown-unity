@@ -16,4 +16,12 @@ public class UserService : MonoBehaviour {
             Debug.Log("Obtained player id " + player.Id);
         }));
     }
+
+    public void login(string username)
+    {
+        StartCoroutine(HttpRequestService.Instance.login(username, username, player =>
+        {
+            Debug.Log("Logged in with player " + player.Id);
+        }));
+    }
 }
