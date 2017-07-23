@@ -1270,7 +1270,7 @@ Prefab:
     - target: {fileID: 114167262602818924, guid: 9f5181eb52176314c89f725d829778dc,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: getTurn
+      value: getCurrentTurn
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9f5181eb52176314c89f725d829778dc, type: 2}

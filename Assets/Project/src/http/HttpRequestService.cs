@@ -90,14 +90,22 @@ namespace Traitorstown.src.http
                 responseHandler);
         }
 
-        public IEnumerator register(string email, string password, Action<Player> responseHandler)
+        public IEnumerator getTurn(int gameId, int turnCounter, Action<Turn> responseHandler)
+        {
+            yield return turnRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter),
+                "GET",
+                responseHandler,
+                null);
+        }
+
+        public IEnumerator register(string email, string password, Action<int> responseHandler)
         {
             yield return userRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.REGISTER,
                             JsonUtility.ToJson(new RegistrationRequest(email, password)),
                             responseHandler);
         }
 
-        public IEnumerator login(string email, string password, Action<Player> responseHandler)
+        public IEnumerator login(string email, string password, Action<int> responseHandler)
         {
             yield return userRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.LOGIN,
                             JsonUtility.ToJson(new LoginRequest(email, password)),
@@ -112,13 +120,13 @@ namespace Traitorstown.src.http
                 if (responseHandler != null)
                 {
                     GameRepresentation result = JsonUtility.FromJson<GameRepresentation>(request.downloadHandler.text);
-                    responseHandler(new Game((int)result.id, result.status));
+                    responseHandler(result.toGame());
                 }
 
                 if (multipleResponseHandler != null)
                 {
                     List<GameRepresentation> results = new List<GameRepresentation>(JsonHelper.getJsonArray<GameRepresentation>(request.downloadHandler.text));
-                    multipleResponseHandler(results.ConvertAll(game => new Game((int)game.id, game.status)));
+                    multipleResponseHandler(results.ConvertAll(game => game.toGame()));
                 }
             });
         }
@@ -131,18 +139,37 @@ namespace Traitorstown.src.http
                 if (responseHandler != null)
                 {
                     CardRepresentation card = JsonUtility.FromJson<CardRepresentation>(request.downloadHandler.text);
-                    responseHandler(new Card((int)card.id, card.name));
+                    responseHandler(card.toCard());
                 }
 
                 if (multipleResponseHandler != null)
                 {
                     List<CardRepresentation> results = new List<CardRepresentation>(JsonHelper.getJsonArray<CardRepresentation>(request.downloadHandler.text));
-                    multipleResponseHandler(results.ConvertAll(card => new Card((int)card.id, card.name)));
+                    multipleResponseHandler(results.ConvertAll(card => card.toCard()));
                 }
             });
         }
 
-        private IEnumerator userRequest(string path, string payload, Action<Player> responseHandler)
+        private IEnumerator turnRequest(UnityWebRequest request, string httpVerb, Action<Turn> responseHandler, Action<List<Turn>> multipleResponseHandler)
+        {
+            request.method = httpVerb;
+            yield return makeRequest(request, response =>
+            {
+                if (responseHandler != null)
+                {
+                    TurnRepresentation result = JsonUtility.FromJson<TurnRepresentation>(request.downloadHandler.text);
+                    responseHandler(result.toTurn());
+                }
+
+                if (multipleResponseHandler != null)
+                {
+                    List<TurnRepresentation> results = new List<TurnRepresentation>(JsonHelper.getJsonArray<TurnRepresentation>(request.downloadHandler.text));
+                    multipleResponseHandler(results.ConvertAll(turn => turn.toTurn()));
+                }
+            });
+        }
+
+        private IEnumerator userRequest(string path, string payload, Action<int> responseHandler)
         {
             UnityWebRequest request = UnityWebRequest.Put(
                 Configuration.API_URL + path,
@@ -151,7 +178,7 @@ namespace Traitorstown.src.http
             request.method = "POST";
             yield return makeRequest(request, response =>
             {
-                UserRepresentation result = UserRepresentation.fromJSON(request.downloadHandler.text);
+                UserRepresentation result = JsonUtility.FromJson<UserRepresentation>(request.downloadHandler.text);
 
                 if (result.token != null)
                 {
@@ -159,7 +186,7 @@ namespace Traitorstown.src.http
                     PlayerPrefs.SetString(TOKEN, token);
                 }
 
-                responseHandler(new Player((int)result.id));
+                responseHandler((int)result.id);
             });
         }
 

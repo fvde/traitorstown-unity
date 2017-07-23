@@ -12,19 +12,19 @@ public class UserService : MonoBehaviour {
 
     public void register(string username)
     {
-        StartCoroutine(HttpRequestService.Instance.register(username, username + DateTime.Now.Millisecond, player =>
+        StartCoroutine(HttpRequestService.Instance.register(username, username + DateTime.Now.Millisecond, playerId =>
         {
-            GameState.Instance.PlayerId = player.Id;
-            Debug.Log("Obtained player id " + player.Id);
+            GameState.Instance.PlayerId = playerId;
+            Debug.Log("Obtained player id " + playerId);
         }));
     }
 
     public void login(string username)
     {
-        StartCoroutine(HttpRequestService.Instance.login(username, username, player =>
+        StartCoroutine(HttpRequestService.Instance.login(username, username, playerId =>
         {
-            GameState.Instance.PlayerId = player.Id;
-            Debug.Log("Logged in with player " + player.Id);
+            GameState.Instance.PlayerId = playerId;
+            Debug.Log("Logged in with player " + playerId);
         }));
     }
 }

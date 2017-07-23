@@ -6,13 +6,17 @@ namespace Traitorstown.src.model
 {
     public class Game
     {
-        public int Id { get; set; }
-        public GameStatus status;
+        public int Id { get; }
+        public GameStatus Status { get; }
+        public int Turn { get; }
+        public List<Player> Players { get; }
 
-        public Game(int id, GameStatus status)
+        public Game(int id, GameStatus status, int turn, List<Player> players)
         {
             Id = id;
-            this.status = status;
+            Status = status;
+            Turn = turn;
+            Players = players;
         }
     }
 }

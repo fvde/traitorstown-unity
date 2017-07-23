@@ -19,6 +19,7 @@ public class GameService : MonoBehaviour {
         StartCoroutine(HttpRequestService.Instance.getCurrentGame(GameState.Instance.PlayerId.Value, game =>
         {
             GameState.Instance.GameId = game.Id;
+            GameState.Instance.TurnCounter = game.Turn;
             Debug.Log("Found current game with id " + game.Id);
         }));
     }
@@ -103,9 +104,17 @@ public class GameService : MonoBehaviour {
         }));
     }
 
-    public void getTurn()
+    public void getCurrentTurn()
     {
-        // TODO
+        PlayerRequired();
+        GameRequired();
+        TurnRequired();
+
+        StartCoroutine(HttpRequestService.Instance.getTurn(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, turn =>
+        {
+            GameState.Instance.TurnCounter = turn.Counter;
+            Debug.Log("Game's current turn is " + turn.Counter);
+        }));
     }
 
     public void playCard()
@@ -126,6 +135,14 @@ public class GameService : MonoBehaviour {
         if (!GameState.Instance.GameId.HasValue)
         {
             throw new Exception("Game required. Join a game!");
+        }
+    }
+
+    private void TurnRequired()
+    {
+        if (!GameState.Instance.TurnCounter.HasValue)
+        {
+            throw new Exception("Turn required. Query game first!");
         }
     }
 }

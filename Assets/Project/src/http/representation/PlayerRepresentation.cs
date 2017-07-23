@@ -7,20 +7,20 @@ using UnityEngine;
 namespace Traitorstown.src.http.representation
 {
     [Serializable]
-    public class CardRepresentation
+    public class PlayerRepresentation
     {
         public long id;
-        public string name;
+        public bool ready;
 
-        public CardRepresentation(long id, string name)
+        public PlayerRepresentation(long id, bool ready)
         {
             this.id = id;
-            this.name = name;
+            this.ready = ready;
         }
 
-        public Card toCard()
+        public Player toPlayer()
         {
-            return new Card((int)id, name);
+            return new Player((int)id, ready);
         }
     }
 }

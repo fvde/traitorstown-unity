@@ -6,13 +6,18 @@ namespace Traitorstown.src.model
 {
     public class Card
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public int Id { get; }
+        public string Name { get; }
 
         public Card(int id, string name)
         {
             Id = id;
             Name = name;
+        }
+
+        public Card()
+        {
+
         }
     }
 }

@@ -20,11 +20,6 @@ namespace Traitorstown.src.http.representation
             this.email = email;
             this.token = token;
         }
-
-        public static UserRepresentation fromJSON(String json)
-        {
-            return JsonUtility.FromJson<UserRepresentation>(json);
-        }
     }
 }
 
