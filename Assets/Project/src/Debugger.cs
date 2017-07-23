@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Traitorstown.src.game;
+using Traitorstown.src.model;
 using UnityEngine;
 
 public class Debugger : MonoBehaviour {
@@ -24,9 +25,36 @@ public class Debugger : MonoBehaviour {
 
     void OnGUI()
     {
-        GUI.Label(new Rect(0, 0, 100, 100), "PlayerId: " + playerId);
-        GUI.Label(new Rect(0, 20, 100, 100), "GameId: " + gameId);
-        GUI.Label(new Rect(0, 40, 100, 100), "Turn: " + turnId);
+        int elementOffset = 20;
+        int sectionOffset = 20;
+        int sectionCounter = 0;
+        int elementCounter = 0;
+        int normalHeight = 100;
+        int largeHeight = 300;
+        int width = 400;
+
+        GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "Lobby ---------------- ");
+        GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "PlayerId: " + playerId);
+        GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "GameId: " + gameId);
+        GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "Turn: " + turnId);
+
+        GUI.Label(new Rect(10, elementCounter++ * elementOffset + ++sectionCounter * sectionOffset, width, normalHeight), "Player ---------------- ");
+        foreach (Player player in GameState.Instance.Players)
+        {
+            GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "Player: " + player.Id);
+        }
+
+        GUI.Label(new Rect(10, elementCounter++ * elementOffset + ++sectionCounter * sectionOffset, width, normalHeight), "Cards ---------------- ");
+        foreach (Card card in GameState.Instance.Cards)
+        {
+            GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), card.Name);
+            GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, largeHeight), card.Description);
+
+            foreach (Cost cost in card.Costs)
+            {
+                GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), cost.Resource.ToString() + " : "+  cost.Amount);
+            }
+        }
     }
 
     public void Reset()

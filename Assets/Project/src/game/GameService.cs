@@ -9,7 +9,6 @@ using UnityEngine;
 public class GameService : MonoBehaviour {
 
     private List<Game> openGames = new List<Game>();
-    private List<Card> handCards = new List<Card>();
 
     public void GetCurrentGame()
     {
@@ -20,6 +19,7 @@ public class GameService : MonoBehaviour {
         {
             GameState.Instance.GameId = game.Id;
             GameState.Instance.TurnCounter = game.Turn;
+            GameState.Instance.Players = game.Players;
             Debug.Log("Found current game with id " + game.Id);
         }));
     }
@@ -99,7 +99,7 @@ public class GameService : MonoBehaviour {
 
         StartCoroutine(HttpRequestService.Instance.GetCards(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, cards =>
         {
-            handCards = new List<Card>(cards);
+            GameState.Instance.Cards = new List<Card>(cards);
             cards.ForEach(card => Debug.Log(card.Name));
         }));
     }
@@ -124,16 +124,16 @@ public class GameService : MonoBehaviour {
         TurnRequired();
         CardRequired(cardId);
 
-        if (cardId == -1 && handCards.Count > 0)
+        if (cardId == -1 && GameState.Instance.Cards.Count > 0)
         {
-            cardId = handCards[0].Id;
+            cardId = GameState.Instance.Cards[0].Id;
         }
 
         StartCoroutine(HttpRequestService.Instance.PlayCard(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, cardId, GameState.Instance.PlayerId.Value, () =>
         {
-            Card card = handCards.Find(c => c.Id == cardId);
+            Card card = GameState.Instance.Cards.Find(c => c.Id == cardId);
             Debug.Log("Played card with id " + card.Id + ", "+ card.Name);
-            handCards.Remove(card);
+            GameState.Instance.Cards.Remove(card);
         }));
     }
 
@@ -163,7 +163,7 @@ public class GameService : MonoBehaviour {
 
     public void CardRequired(int cardId)
     {
-        if (cardId == -1 && handCards.Count == 0)
+        if (cardId == -1 && GameState.Instance.Cards.Count == 0)
         {
             throw new Exception("Card required. Query cards first!");
         }

@@ -8,13 +8,13 @@ namespace Traitorstown.src.model
 {
     public class Cost
     {
-        public Resource resource { get; }
-        public int amount { get; }
+        public Resource Resource { get; }
+        public int Amount { get; }
 
         public Cost(Resource resource, int amount)
         {
-            this.resource = resource;
-            this.amount = amount;
+            this.Resource = resource;
+            this.Amount = amount;
         }
     }
 }
