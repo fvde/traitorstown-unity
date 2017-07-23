@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Traitorstown.src.http
 {
-    class EndpointsResources
+    class HttpResources
     {
         public static readonly string DELIMITER = "/";
         public static readonly string USERS = "users";

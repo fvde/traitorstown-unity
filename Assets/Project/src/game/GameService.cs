@@ -9,6 +9,7 @@ using UnityEngine;
 public class GameService : MonoBehaviour {
 
     private List<Game> openGames = new List<Game>();
+    private List<Card> handCards = new List<Card>();
 
     public void getCurrentGame()
     {
@@ -35,7 +36,7 @@ public class GameService : MonoBehaviour {
         StartCoroutine(HttpRequestService.Instance.getOpenGames(games =>
         {
             Debug.Log("Found open games:");
-            openGames.AddRange(games);
+            openGames = new List<Game>(games);
             games.ForEach(game => Debug.Log(game));
         }));
     }
@@ -92,7 +93,14 @@ public class GameService : MonoBehaviour {
 
     public void getCards()
     {
-        // TODO
+        PlayerRequired();
+        GameRequired();
+
+        StartCoroutine(HttpRequestService.Instance.getCards(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, cards =>
+        {
+            handCards = new List<Card>(cards);
+            cards.ForEach(card => Debug.Log(card.Name));
+        }));
     }
 
     public void getTurn()

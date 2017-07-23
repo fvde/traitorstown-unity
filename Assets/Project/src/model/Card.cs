@@ -4,13 +4,16 @@ using UnityEngine;
 
 namespace Traitorstown.src.model
 {
-    public class Player
+    public class Card
     {
         public int Id { get; set; }
+        public string Name { get; set; }
 
-        public Player(int id)
+        public Card(int id, string name)
         {
             Id = id;
+            Name = name;
         }
     }
 }
+

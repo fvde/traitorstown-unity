@@ -4,10 +4,9 @@ using UnityEngine;
 
 namespace Traitorstown.src.model
 {
-    public class Game : TraitorsTownObject
+    public class Game
     {
         public int Id { get; set; }
-
         public GameStatus status;
 
         public Game(int id, GameStatus status)

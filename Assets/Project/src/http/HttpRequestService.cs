@@ -36,7 +36,7 @@ namespace Traitorstown.src.http
 
         public IEnumerator getCurrentGame(int playerId, Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Get(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.PLAYERS + EndpointsResources.DELIMITER + playerId + EndpointsResources.DELIMITER + EndpointsResources.GAMES),
+            yield return gameRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId + HttpResources.DELIMITER + HttpResources.GAMES),
                 "GET",
                 responseHandler,
                 null);
@@ -44,7 +44,7 @@ namespace Traitorstown.src.http
 
         public IEnumerator createNewGame(Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Post(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES, "{}"),
+            yield return gameRequest(UnityWebRequest.Post(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES, "{}"),
                 "POST",
                 responseHandler,
                 null);
@@ -52,7 +52,7 @@ namespace Traitorstown.src.http
 
         public IEnumerator getOpenGames(Action<List<Game>> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Get(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES + "?status=" + GameStatus.OPEN),
+            yield return gameRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + "?status=" + GameStatus.OPEN),
                 "GET",
                 null,
                 responseHandler);
@@ -60,7 +60,7 @@ namespace Traitorstown.src.http
 
         public IEnumerator joinGame(int gameId, int playerId, Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES + EndpointsResources.DELIMITER + gameId + EndpointsResources.DELIMITER + EndpointsResources.PLAYERS, JsonUtility.ToJson(new PlayerRequest(playerId))),
+            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS, JsonUtility.ToJson(new PlayerRequest(playerId))),
                 "POST",
                 responseHandler,
                 null);
@@ -68,7 +68,7 @@ namespace Traitorstown.src.http
 
         public IEnumerator leaveGame(int gameId, int playerId, Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES + EndpointsResources.DELIMITER + gameId + EndpointsResources.DELIMITER + EndpointsResources.PLAYERS + EndpointsResources.DELIMITER + playerId, "{}"),
+            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId, "{}"),
                 "DELETE",
                 responseHandler,
                 null);
@@ -76,22 +76,30 @@ namespace Traitorstown.src.http
 
         public IEnumerator setReady(int gameId, int playerId, bool ready, Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES + EndpointsResources.DELIMITER + gameId + EndpointsResources.DELIMITER + EndpointsResources.PLAYERS + EndpointsResources.DELIMITER + playerId, JsonUtility.ToJson(new PlayerReadyRequest(ready))),
+            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId, JsonUtility.ToJson(new PlayerReadyRequest(ready))),
                 "PUT",
                 responseHandler,
                 null);
         }
 
+        public IEnumerator getCards(int gameId, int playerId, Action<List<Card>> responseHandler)
+        {
+            yield return cardRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId + HttpResources.DELIMITER + HttpResources.CARDS),
+                "GET",
+                null,
+                responseHandler);
+        }
+
         public IEnumerator register(string email, string password, Action<Player> responseHandler)
         {
-            yield return userRequest(EndpointsResources.DELIMITER + EndpointsResources.USERS + EndpointsResources.DELIMITER + EndpointsResources.REGISTER,
+            yield return userRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.REGISTER,
                             JsonUtility.ToJson(new RegistrationRequest(email, password)),
                             responseHandler);
         }
 
         public IEnumerator login(string email, string password, Action<Player> responseHandler)
         {
-            yield return userRequest(EndpointsResources.DELIMITER + EndpointsResources.USERS + EndpointsResources.DELIMITER + EndpointsResources.LOGIN,
+            yield return userRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.LOGIN,
                             JsonUtility.ToJson(new LoginRequest(email, password)),
                             responseHandler);
         }
@@ -111,6 +119,25 @@ namespace Traitorstown.src.http
                 {
                     List<GameRepresentation> results = new List<GameRepresentation>(JsonHelper.getJsonArray<GameRepresentation>(request.downloadHandler.text));
                     multipleResponseHandler(results.ConvertAll(game => new Game((int)game.id, game.status)));
+                }
+            });
+        }
+
+        private IEnumerator cardRequest(UnityWebRequest request, string httpVerb, Action<Card> responseHandler, Action<List<Card>> multipleResponseHandler)
+        {
+            request.method = httpVerb;
+            yield return makeRequest(request, response =>
+            {
+                if (responseHandler != null)
+                {
+                    CardRepresentation card = JsonUtility.FromJson<CardRepresentation>(request.downloadHandler.text);
+                    responseHandler(new Card((int)card.id, card.name));
+                }
+
+                if (multipleResponseHandler != null)
+                {
+                    List<CardRepresentation> results = new List<CardRepresentation>(JsonHelper.getJsonArray<CardRepresentation>(request.downloadHandler.text));
+                    multipleResponseHandler(results.ConvertAll(card => new Card((int)card.id, card.name)));
                 }
             });
         }
