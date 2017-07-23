@@ -131,8 +131,9 @@ public class GameService : MonoBehaviour {
 
         StartCoroutine(HttpRequestService.Instance.playCard(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, cardId, GameState.Instance.PlayerId.Value, () =>
         {
-            Debug.Log("Played card " + cardId);
-            handCards.Remove(handCards.Find(card => card.Id == cardId));
+            Card card = handCards.Find(c => c.Id == cardId);
+            Debug.Log("Played card with id " + card.Id + ", "+ card.Name);
+            handCards.Remove(card);
         }));
     }
 
