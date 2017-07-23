@@ -8,14 +8,14 @@ using Traitorstown.src.model;
 namespace Traitorstown.src.http.representation
 {
     [Serializable]
-    public class CardCostRepresentation
+    public class ResourceRepresentation
     {
-        public Resource resource;
+        public ResourceType type;
         public int amount;
 
-        public Cost toCost()
+        public Resource ToResource()
         {
-            return new Cost(resource, amount);
+            return new Resource(type, amount);
         }
     }
 }

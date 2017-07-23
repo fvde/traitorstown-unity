@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace Traitorstown.src.model
 {
     [Serializable]
-    public enum GameStatus
+    public enum ResourceType
     {
-        OPEN,
-        PLAYING,
-        FINISHED
+        GOLD,
+        REPUTATION,
+        CARD
     }
 }

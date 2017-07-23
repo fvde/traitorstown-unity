@@ -8,11 +8,13 @@ namespace Traitorstown.src.model
     {
         public int Id { get; }
         public bool Ready { get; }
+        public List<Resource> Resources;
 
-        public Player(int id, bool ready)
+        public Player(int id, bool ready, List<Resource> resources)
         {
             Id = id;
             Ready = ready;
+            Resources = resources;
         }
     }
 }

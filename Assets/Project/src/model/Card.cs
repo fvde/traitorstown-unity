@@ -9,9 +9,9 @@ namespace Traitorstown.src.model
         public int Id { get; }
         public string Name { get; }
         public string Description { get; }
-        public List<Cost> Costs { get; }
+        public List<Resource> Costs { get; }
 
-        public Card(int id, string name, string description, List<Cost> costs)
+        public Card(int id, string name, string description, List<Resource> costs)
         {
             Id = id;
             Name = name;

@@ -107,13 +107,13 @@ namespace Traitorstown.src.game
 
         public List<Player> Players { get; set; }
         public List<Card> Cards { get; set; }
-        public Dictionary<Resource, int> Resources { get; set; }
+        public List<Resource> Resources { get; set; }
 
         private GameState()
         {
             Players = new List<Player>();
             Cards = new List<Card>();
-            Resources = new Dictionary<Resource, int>();
+            Resources = new List<Resource>();
         }
 
         public void Reset()

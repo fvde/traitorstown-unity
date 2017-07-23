@@ -42,6 +42,10 @@ public class Debugger : MonoBehaviour {
         foreach (Player player in GameState.Instance.Players)
         {
             GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "Player: " + player.Id);
+            foreach (Resource resource in player.Resources)
+            {
+                GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), resource.Type.ToString() + " : " + resource.Amount);
+            }
         }
 
         GUI.Label(new Rect(10, elementCounter++ * elementOffset + ++sectionCounter * sectionOffset, width, normalHeight), "Cards ---------------- ");
@@ -50,9 +54,9 @@ public class Debugger : MonoBehaviour {
             GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), card.Name);
             GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, largeHeight), card.Description);
 
-            foreach (Cost cost in card.Costs)
+            foreach (Resource cost in card.Costs)
             {
-                GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), cost.Resource.ToString() + " : "+  cost.Amount);
+                GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), cost.Type.ToString() + " : "+  cost.Amount);
             }
         }
     }

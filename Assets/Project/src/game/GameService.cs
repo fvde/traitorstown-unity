@@ -20,6 +20,7 @@ public class GameService : MonoBehaviour {
             GameState.Instance.GameId = game.Id;
             GameState.Instance.TurnCounter = game.Turn;
             GameState.Instance.Players = game.Players;
+            GameState.Instance.Resources = new List<Resource>(game.Players.Find(p => p.Id == GameState.Instance.PlayerId).Resources);
             Debug.Log("Found current game with id " + game.Id);
         }));
     }

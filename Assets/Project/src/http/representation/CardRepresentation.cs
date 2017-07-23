@@ -12,9 +12,9 @@ namespace Traitorstown.src.http.representation
         public long id;
         public string name;
         public string description;
-        public List<CardCostRepresentation> costs;
+        public List<ResourceRepresentation> costs;
 
-        public CardRepresentation(long id, string name, string description, List<CardCostRepresentation> costs)
+        public CardRepresentation(long id, string name, string description, List<ResourceRepresentation> costs)
         {
             this.id = id;
             this.name = name;
@@ -24,7 +24,7 @@ namespace Traitorstown.src.http.representation
 
         public Card ToCard()
         {
-            return new Card((int)id, name, description, costs.ConvertAll(cost => cost.toCost()));
+            return new Card((int)id, name, description, costs.ConvertAll(resource => resource.ToResource()));
         }
     }
 }

@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace Traitorstown.src.model
 {
-    public enum Resource
+    public class Resource
     {
-        GOLD,
-        REPUTATION,
-        CARD
+        public ResourceType Type { get; }
+        public int Amount { get; }
+
+        public Resource(ResourceType type, int amount)
+        {
+            Type = type;
+            Amount = amount;
+        }
     }
 }
