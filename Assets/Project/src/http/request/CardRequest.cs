@@ -8,10 +8,12 @@ namespace Traitorstown.src.http.request
     public class CardRequest
     {
         public long id;
+        public long target;
 
-        public CardRequest(long cardId)
+        public CardRequest(long id, long target)
         {
-            this.id = cardId;
+            this.id = id;
+            this.target = target;
         }
     }
 }

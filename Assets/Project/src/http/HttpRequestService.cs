@@ -98,9 +98,9 @@ namespace Traitorstown.src.http
                 null);
         }
 
-        public IEnumerator playCard(int gameId, int turnCounter, int cardId, Action callback)
+        public IEnumerator playCard(int gameId, int turnCounter, int cardId, int targetPlayer, Action callback)
         {
-            yield return makeRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter + HttpResources.DELIMITER + HttpResources.CARDS, JsonUtility.ToJson(new CardRequest(cardId))),
+            yield return makeRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter + HttpResources.DELIMITER + HttpResources.CARDS, JsonUtility.ToJson(new CardRequest(cardId, targetPlayer))),
                 "POST",
                 null, 
                 callback);
