@@ -11,16 +11,20 @@ namespace Traitorstown.src.http.representation
     {
         public long id;
         public string name;
+        public string description;
+        public List<CardCostRepresentation> costs;
 
-        public CardRepresentation(long id, string name)
+        public CardRepresentation(long id, string name, string description, List<CardCostRepresentation> costs)
         {
             this.id = id;
             this.name = name;
+            this.description = description;
+            this.costs = costs;
         }
 
-        public Card toCard()
+        public Card ToCard()
         {
-            return new Card((int)id, name);
+            return new Card((int)id, name, description, costs.ConvertAll(cost => cost.toCost()));
         }
     }
 }

@@ -11,12 +11,12 @@ public class GameService : MonoBehaviour {
     private List<Game> openGames = new List<Game>();
     private List<Card> handCards = new List<Card>();
 
-    public void getCurrentGame()
+    public void GetCurrentGame()
     {
         PlayerRequired();
 
         GameState.Instance.GameId = null;
-        StartCoroutine(HttpRequestService.Instance.getCurrentGame(GameState.Instance.PlayerId.Value, game =>
+        StartCoroutine(HttpRequestService.Instance.GetCurrentGame(GameState.Instance.PlayerId.Value, game =>
         {
             GameState.Instance.GameId = game.Id;
             GameState.Instance.TurnCounter = game.Turn;
@@ -24,17 +24,17 @@ public class GameService : MonoBehaviour {
         }));
     }
 
-    public void createNewGame()
+    public void CreateNewGame()
     {
-        StartCoroutine(HttpRequestService.Instance.createNewGame(game =>
+        StartCoroutine(HttpRequestService.Instance.CreateNewGame(game =>
         {
             Debug.Log("Started game with id " + game.Id);
         }));
     }
 
-    public void getOpenGames()
+    public void GetOpenGames()
     {
-        StartCoroutine(HttpRequestService.Instance.getOpenGames(games =>
+        StartCoroutine(HttpRequestService.Instance.GetOpenGames(games =>
         {
             Debug.Log("Found open games:");
             openGames = new List<Game>(games);
@@ -42,7 +42,7 @@ public class GameService : MonoBehaviour {
         }));
     }
 
-    public void joinGame(int gameId)
+    public void JoinGame(int gameId)
     {
         PlayerRequired();
 
@@ -51,73 +51,73 @@ public class GameService : MonoBehaviour {
             gameId = openGames[0].Id;
         }
 
-        StartCoroutine(HttpRequestService.Instance.joinGame(gameId, GameState.Instance.PlayerId.Value, game =>
+        StartCoroutine(HttpRequestService.Instance.JoinGame(gameId, GameState.Instance.PlayerId.Value, game =>
         {
             GameState.Instance.GameId = game.Id;
             Debug.Log("Joined game with id " + game.Id);
         }));
     }
 
-    public void leaveGame()
+    public void LeaveGame()
     {
         PlayerRequired();
         GameRequired();
 
-        StartCoroutine(HttpRequestService.Instance.leaveGame(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, game =>
+        StartCoroutine(HttpRequestService.Instance.LeaveGame(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, game =>
         {
             GameState.Instance.GameId = null;
             Debug.Log("Left game with id " + game.Id);
         }));
     }
 
-    public void setReady()
+    public void SetReady()
     {
         PlayerRequired();
         GameRequired();
 
-        StartCoroutine(HttpRequestService.Instance.setReady(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, true, game =>
+        StartCoroutine(HttpRequestService.Instance.SetReady(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, true, game =>
         {
             Debug.Log("Set ready to start game with id " + game.Id);
         }));
     }
 
-    public void setNotReady()
+    public void SetNotReady()
     {
         PlayerRequired();
         GameRequired();
 
-        StartCoroutine(HttpRequestService.Instance.setReady(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, false, game =>
+        StartCoroutine(HttpRequestService.Instance.SetReady(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, false, game =>
         {
             Debug.Log("Not ready to start game with id " + game.Id);
         }));
     }
 
-    public void getCards()
+    public void GetCards()
     {
         PlayerRequired();
         GameRequired();
 
-        StartCoroutine(HttpRequestService.Instance.getCards(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, cards =>
+        StartCoroutine(HttpRequestService.Instance.GetCards(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, cards =>
         {
             handCards = new List<Card>(cards);
             cards.ForEach(card => Debug.Log(card.Name));
         }));
     }
 
-    public void getCurrentTurn()
+    public void GetCurrentTurn()
     {
         PlayerRequired();
         GameRequired();
         TurnRequired();
 
-        StartCoroutine(HttpRequestService.Instance.getTurn(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, turn =>
+        StartCoroutine(HttpRequestService.Instance.GetTurn(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, turn =>
         {
             GameState.Instance.TurnCounter = turn.Counter;
             Debug.Log("Game's current turn is " + turn.Counter);
         }));
     }
 
-    public void playCard(int cardId)
+    public void PlayCard(int cardId)
     {
         PlayerRequired();
         GameRequired();
@@ -129,7 +129,7 @@ public class GameService : MonoBehaviour {
             cardId = handCards[0].Id;
         }
 
-        StartCoroutine(HttpRequestService.Instance.playCard(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, cardId, GameState.Instance.PlayerId.Value, () =>
+        StartCoroutine(HttpRequestService.Instance.PlayCard(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, cardId, GameState.Instance.PlayerId.Value, () =>
         {
             Card card = handCards.Find(c => c.Id == cardId);
             Debug.Log("Played card with id " + card.Id + ", "+ card.Name);

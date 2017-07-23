@@ -16,7 +16,7 @@ namespace Traitorstown.src.http.representation
             this.counter = counter;
         }
 
-        public Turn toTurn()
+        public Turn ToTurn()
         {
             return new Turn(counter);
         }

@@ -22,10 +22,10 @@ namespace Traitorstown.src.http.representation
             this.players = players;
         }
 
-        public Game toGame()
+        public Game ToGame()
         {
             return new Game((int)id, status, turn, new List<Player>(
-                new List<PlayerRepresentation>(players).ConvertAll<Player>(player => player.toPlayer())));
+                new List<PlayerRepresentation>(players).ConvertAll<Player>(player => player.ToPlayer())));
         }
     }
 }

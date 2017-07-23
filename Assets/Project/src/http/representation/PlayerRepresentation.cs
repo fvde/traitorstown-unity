@@ -18,7 +18,7 @@ namespace Traitorstown.src.http.representation
             this.ready = ready;
         }
 
-        public Player toPlayer()
+        public Player ToPlayer()
         {
             return new Player((int)id, ready);
         }

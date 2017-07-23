@@ -34,153 +34,153 @@ namespace Traitorstown.src.http
             }
         }
 
-        public IEnumerator getCurrentGame(int playerId, Action<Game> responseHandler)
+        public IEnumerator GetCurrentGame(int playerId, Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId + HttpResources.DELIMITER + HttpResources.GAMES),
+            yield return GameRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId + HttpResources.DELIMITER + HttpResources.GAMES),
                 "GET",
                 responseHandler,
                 null);
         }
 
-        public IEnumerator createNewGame(Action<Game> responseHandler)
+        public IEnumerator CreateNewGame(Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Post(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES, "{}"),
+            yield return GameRequest(UnityWebRequest.Post(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES, "{}"),
                 "POST",
                 responseHandler,
                 null);
         }
 
-        public IEnumerator getOpenGames(Action<List<Game>> responseHandler)
+        public IEnumerator GetOpenGames(Action<List<Game>> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + "?status=" + GameStatus.OPEN),
+            yield return GameRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + "?status=" + GameStatus.OPEN),
                 "GET",
                 null,
                 responseHandler);
         }
 
-        public IEnumerator joinGame(int gameId, int playerId, Action<Game> responseHandler)
+        public IEnumerator JoinGame(int gameId, int playerId, Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS, JsonUtility.ToJson(new PlayerRequest(playerId))),
+            yield return GameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS, JsonUtility.ToJson(new PlayerRequest(playerId))),
                 "POST",
                 responseHandler,
                 null);
         }
 
-        public IEnumerator leaveGame(int gameId, int playerId, Action<Game> responseHandler)
+        public IEnumerator LeaveGame(int gameId, int playerId, Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId, "{}"),
+            yield return GameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId, "{}"),
                 "DELETE",
                 responseHandler,
                 null);
         }
 
-        public IEnumerator setReady(int gameId, int playerId, bool ready, Action<Game> responseHandler)
+        public IEnumerator SetReady(int gameId, int playerId, bool ready, Action<Game> responseHandler)
         {
-            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId, JsonUtility.ToJson(new PlayerReadyRequest(ready))),
+            yield return GameRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId, JsonUtility.ToJson(new PlayerReadyRequest(ready))),
                 "PUT",
                 responseHandler,
                 null);
         }
 
-        public IEnumerator getCards(int gameId, int playerId, Action<List<Card>> responseHandler)
+        public IEnumerator GetCards(int gameId, int playerId, Action<List<Card>> responseHandler)
         {
-            yield return cardRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId + HttpResources.DELIMITER + HttpResources.CARDS),
+            yield return CardRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId + HttpResources.DELIMITER + HttpResources.CARDS),
                 "GET",
                 null,
                 responseHandler);
         }
 
-        public IEnumerator getTurn(int gameId, int turnCounter, Action<Turn> responseHandler)
+        public IEnumerator GetTurn(int gameId, int turnCounter, Action<Turn> responseHandler)
         {
-            yield return turnRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter),
+            yield return TurnRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter),
                 "GET",
                 responseHandler,
                 null);
         }
 
-        public IEnumerator playCard(int gameId, int turnCounter, int cardId, int targetPlayer, Action callback)
+        public IEnumerator PlayCard(int gameId, int turnCounter, int cardId, int targetPlayer, Action callback)
         {
-            yield return makeRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter + HttpResources.DELIMITER + HttpResources.CARDS, JsonUtility.ToJson(new CardRequest(cardId, targetPlayer))),
+            yield return MakeRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter + HttpResources.DELIMITER + HttpResources.CARDS, JsonUtility.ToJson(new CardRequest(cardId, targetPlayer))),
                 "POST",
                 null, 
                 callback);
         }
 
-        public IEnumerator register(string email, string password, Action<int> responseHandler)
+        public IEnumerator Register(string email, string password, Action<int> responseHandler)
         {
-            yield return userRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.REGISTER,
+            yield return UserRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.REGISTER,
                             JsonUtility.ToJson(new RegistrationRequest(email, password)),
                             responseHandler);
         }
 
-        public IEnumerator login(string email, string password, Action<int> responseHandler)
+        public IEnumerator Login(string email, string password, Action<int> responseHandler)
         {
-            yield return userRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.LOGIN,
+            yield return UserRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.LOGIN,
                             JsonUtility.ToJson(new LoginRequest(email, password)),
                             responseHandler);
         }
 
-        private IEnumerator gameRequest(UnityWebRequest request, string httpVerb, Action<Game> responseHandler, Action<List<Game>> multipleResponseHandler)
+        private IEnumerator GameRequest(UnityWebRequest request, string httpVerb, Action<Game> responseHandler, Action<List<Game>> multipleResponseHandler)
         {
-            yield return makeRequest(request, httpVerb, response =>
+            yield return MakeRequest(request, httpVerb, response =>
             {
                 if (responseHandler != null)
                 {
                     GameRepresentation result = JsonUtility.FromJson<GameRepresentation>(request.downloadHandler.text);
-                    responseHandler(result.toGame());
+                    responseHandler(result.ToGame());
                 }
 
                 if (multipleResponseHandler != null)
                 {
                     List<GameRepresentation> results = new List<GameRepresentation>(JsonHelper.getJsonArray<GameRepresentation>(request.downloadHandler.text));
-                    multipleResponseHandler(results.ConvertAll(game => game.toGame()));
+                    multipleResponseHandler(results.ConvertAll(game => game.ToGame()));
                 }
             });
         }
 
-        private IEnumerator cardRequest(UnityWebRequest request, string httpVerb, Action<Card> responseHandler, Action<List<Card>> multipleResponseHandler)
+        private IEnumerator CardRequest(UnityWebRequest request, string httpVerb, Action<Card> responseHandler, Action<List<Card>> multipleResponseHandler)
         {
-            yield return makeRequest(request, httpVerb, response =>
+            yield return MakeRequest(request, httpVerb, response =>
             {
                 if (responseHandler != null)
                 {
                     CardRepresentation card = JsonUtility.FromJson<CardRepresentation>(request.downloadHandler.text);
-                    responseHandler(card.toCard());
+                    responseHandler(card.ToCard());
                 }
 
                 if (multipleResponseHandler != null)
                 {
                     List<CardRepresentation> results = new List<CardRepresentation>(JsonHelper.getJsonArray<CardRepresentation>(request.downloadHandler.text));
-                    multipleResponseHandler(results.ConvertAll(card => card.toCard()));
+                    multipleResponseHandler(results.ConvertAll(card => card.ToCard()));
                 }
             });
         }
 
-        private IEnumerator turnRequest(UnityWebRequest request, string httpVerb, Action<Turn> responseHandler, Action<List<Turn>> multipleResponseHandler)
+        private IEnumerator TurnRequest(UnityWebRequest request, string httpVerb, Action<Turn> responseHandler, Action<List<Turn>> multipleResponseHandler)
         {
-            yield return makeRequest(request, httpVerb, response =>
+            yield return MakeRequest(request, httpVerb, response =>
             {
                 if (responseHandler != null)
                 {
                     TurnRepresentation result = JsonUtility.FromJson<TurnRepresentation>(request.downloadHandler.text);
-                    responseHandler(result.toTurn());
+                    responseHandler(result.ToTurn());
                 }
 
                 if (multipleResponseHandler != null)
                 {
                     List<TurnRepresentation> results = new List<TurnRepresentation>(JsonHelper.getJsonArray<TurnRepresentation>(request.downloadHandler.text));
-                    multipleResponseHandler(results.ConvertAll(turn => turn.toTurn()));
+                    multipleResponseHandler(results.ConvertAll(turn => turn.ToTurn()));
                 }
             });
         }
 
-        private IEnumerator userRequest(string path, string payload, Action<int> responseHandler)
+        private IEnumerator UserRequest(string path, string payload, Action<int> responseHandler)
         {
             UnityWebRequest request = UnityWebRequest.Put(
                 Configuration.API_URL + path,
                 payload);
 
-            yield return makeRequest(request, "POST", response =>
+            yield return MakeRequest(request, "POST", response =>
             {
                 UserRepresentation result = JsonUtility.FromJson<UserRepresentation>(request.downloadHandler.text);
 
@@ -194,7 +194,7 @@ namespace Traitorstown.src.http
             });
         }
 
-        private IEnumerator makeRequest(UnityWebRequest request, string httpVerb, Action<object> responseHandler = null, Action callback = null)
+        private IEnumerator MakeRequest(UnityWebRequest request, string httpVerb, Action<object> responseHandler = null, Action callback = null)
         {
             request.method = httpVerb;
 
