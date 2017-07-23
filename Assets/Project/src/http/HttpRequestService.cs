@@ -98,6 +98,14 @@ namespace Traitorstown.src.http
                 null);
         }
 
+        public IEnumerator playCard(int gameId, int turnCounter, int cardId, Action callback)
+        {
+            yield return makeRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter + HttpResources.DELIMITER + HttpResources.CARDS, JsonUtility.ToJson(new CardRequest(cardId))),
+                "POST",
+                null, 
+                callback);
+        }
+
         public IEnumerator register(string email, string password, Action<int> responseHandler)
         {
             yield return userRequest(HttpResources.DELIMITER + HttpResources.USERS + HttpResources.DELIMITER + HttpResources.REGISTER,
@@ -114,8 +122,7 @@ namespace Traitorstown.src.http
 
         private IEnumerator gameRequest(UnityWebRequest request, string httpVerb, Action<Game> responseHandler, Action<List<Game>> multipleResponseHandler)
         {
-            request.method = httpVerb;
-            yield return makeRequest(request, response =>
+            yield return makeRequest(request, httpVerb, response =>
             {
                 if (responseHandler != null)
                 {
@@ -133,8 +140,7 @@ namespace Traitorstown.src.http
 
         private IEnumerator cardRequest(UnityWebRequest request, string httpVerb, Action<Card> responseHandler, Action<List<Card>> multipleResponseHandler)
         {
-            request.method = httpVerb;
-            yield return makeRequest(request, response =>
+            yield return makeRequest(request, httpVerb, response =>
             {
                 if (responseHandler != null)
                 {
@@ -152,8 +158,7 @@ namespace Traitorstown.src.http
 
         private IEnumerator turnRequest(UnityWebRequest request, string httpVerb, Action<Turn> responseHandler, Action<List<Turn>> multipleResponseHandler)
         {
-            request.method = httpVerb;
-            yield return makeRequest(request, response =>
+            yield return makeRequest(request, httpVerb, response =>
             {
                 if (responseHandler != null)
                 {
@@ -175,8 +180,7 @@ namespace Traitorstown.src.http
                 Configuration.API_URL + path,
                 payload);
 
-            request.method = "POST";
-            yield return makeRequest(request, response =>
+            yield return makeRequest(request, "POST", response =>
             {
                 UserRepresentation result = JsonUtility.FromJson<UserRepresentation>(request.downloadHandler.text);
 
@@ -190,8 +194,10 @@ namespace Traitorstown.src.http
             });
         }
 
-        private IEnumerator makeRequest(UnityWebRequest request, Action<object> responseHandler = null)
+        private IEnumerator makeRequest(UnityWebRequest request, string httpVerb, Action<object> responseHandler = null, Action callback = null)
         {
+            request.method = httpVerb;
+
             if (token != null)
             {
                 request.SetRequestHeader(TOKEN, token);
@@ -216,6 +222,7 @@ namespace Traitorstown.src.http
                 if (request.responseCode == 200)
                 {
                     responseHandler?.Invoke(request.downloadHandler.text);
+                    callback?.Invoke();
                 }
             }
         }

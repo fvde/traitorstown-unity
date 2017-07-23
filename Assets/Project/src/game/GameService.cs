@@ -42,7 +42,7 @@ public class GameService : MonoBehaviour {
         }));
     }
 
-    public void joinGame(int gameId = -1)
+    public void joinGame(int gameId)
     {
         PlayerRequired();
 
@@ -117,9 +117,23 @@ public class GameService : MonoBehaviour {
         }));
     }
 
-    public void playCard()
+    public void playCard(int cardId)
     {
-        // TODO
+        PlayerRequired();
+        GameRequired();
+        TurnRequired();
+        CardRequired(cardId);
+
+        if (cardId == -1 && handCards.Count > 0)
+        {
+            cardId = handCards[0].Id;
+        }
+
+        StartCoroutine(HttpRequestService.Instance.playCard(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, cardId, () =>
+        {
+            Debug.Log("Played card " + cardId);
+            handCards.Remove(handCards.Find(card => card.Id == cardId));
+        }));
     }
 
     private void PlayerRequired()
@@ -143,6 +157,14 @@ public class GameService : MonoBehaviour {
         if (!GameState.Instance.TurnCounter.HasValue)
         {
             throw new Exception("Turn required. Query game first!");
+        }
+    }
+
+    public void CardRequired(int cardId)
+    {
+        if (cardId == -1 && handCards.Count == 0)
+        {
+            throw new Exception("Card required. Query cards first!");
         }
     }
 }

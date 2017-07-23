@@ -5,13 +5,13 @@ using System.Collections.Generic;
 namespace Traitorstown.src.http.request
 {
     [Serializable]
-    public class PlayerRequest
+    public class CardRequest
     {
         public long id;
 
-        public PlayerRequest(long id)
+        public CardRequest(long cardId)
         {
-            this.id = id;
+            this.id = cardId;
         }
     }
 }
