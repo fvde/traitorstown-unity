@@ -59,6 +59,7 @@ public class GameService : MonoBehaviour {
     public void leaveGame()
     {
         PlayerRequired();
+        GameRequired();
 
         StartCoroutine(HttpRequestService.Instance.leaveGame(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, game =>
         {
@@ -69,12 +70,24 @@ public class GameService : MonoBehaviour {
 
     public void setReady()
     {
-        // TODO
+        PlayerRequired();
+        GameRequired();
+
+        StartCoroutine(HttpRequestService.Instance.setReady(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, true, game =>
+        {
+            Debug.Log("Set ready to start game with id " + game.Id);
+        }));
     }
 
     public void setNotReady()
     {
-        // TODO
+        PlayerRequired();
+        GameRequired();
+
+        StartCoroutine(HttpRequestService.Instance.setReady(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, false, game =>
+        {
+            Debug.Log("Not ready to start game with id " + game.Id);
+        }));
     }
 
     public void getCards()
@@ -97,6 +110,14 @@ public class GameService : MonoBehaviour {
         if (!GameState.Instance.PlayerId.HasValue)
         {
             throw new Exception("Player required. Login or Register.");
+        }
+    }
+
+    private void GameRequired()
+    {
+        if (!GameState.Instance.GameId.HasValue)
+        {
+            throw new Exception("Game required. Join a game!");
         }
     }
 }

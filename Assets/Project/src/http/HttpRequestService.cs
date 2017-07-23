@@ -74,6 +74,14 @@ namespace Traitorstown.src.http
                 null);
         }
 
+        public IEnumerator setReady(int gameId, int playerId, bool ready, Action<Game> responseHandler)
+        {
+            yield return gameRequest(UnityWebRequest.Put(Configuration.API_URL + EndpointsResources.DELIMITER + EndpointsResources.GAMES + EndpointsResources.DELIMITER + gameId + EndpointsResources.DELIMITER + EndpointsResources.PLAYERS + EndpointsResources.DELIMITER + playerId, JsonUtility.ToJson(new PlayerReadyRequest(ready))),
+                "PUT",
+                responseHandler,
+                null);
+        }
+
         public IEnumerator register(string email, string password, Action<Player> responseHandler)
         {
             yield return userRequest(EndpointsResources.DELIMITER + EndpointsResources.USERS + EndpointsResources.DELIMITER + EndpointsResources.REGISTER,
