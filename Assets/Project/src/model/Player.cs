@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Traitorstown.src.model
 {
-    public class Player
+    public class Player : IEquatable<Player>
     {
         public int Id { get; }
         public bool Ready { get; }
@@ -15,6 +16,11 @@ namespace Traitorstown.src.model
             Id = id;
             Ready = ready;
             Resources = resources;
+        }
+
+        public bool Equals(Player other)
+        {
+            return Id.Equals(other.Id);
         }
     }
 }

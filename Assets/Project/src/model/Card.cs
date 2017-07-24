@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,18 @@ namespace Traitorstown.src.model
             Name = name;
             Description = description;
             Costs = costs;
+        }
+
+        public override int GetHashCode()
+        {
+            if (Name == null) return 0;
+            return Name.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            Card other = obj as Card;
+            return other != null && Id.Equals(other.Id);
         }
     }
 }

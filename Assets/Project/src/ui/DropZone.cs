@@ -38,6 +38,8 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
         if (d != null)
         {
             d.parentToReturnTo = this.transform;
+            var player = GetComponent<PlayerGameObject>();
+            player?.targetWithCard(eventData.pointerDrag.GetComponent<CardGameObject>().Id);
         }
 
     }

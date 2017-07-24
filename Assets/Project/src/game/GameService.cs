@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Traitorstown.src.game;
 using Traitorstown.src.http;
 using Traitorstown.src.http.representation;
@@ -9,6 +10,7 @@ using UnityEngine;
 public class GameService : MonoBehaviour {
 
     private List<Game> openGames = new List<Game>();
+    public GameObjectFactory gameObjectfactory;
 
     public void GetCurrentGame()
     {
@@ -19,7 +21,14 @@ public class GameService : MonoBehaviour {
         {
             GameState.Instance.GameId = game.Id;
             GameState.Instance.TurnCounter = game.Turn;
+
+            foreach (Player p in game.Players.FindAll(player => !GameState.Instance.Players.Contains(player)))
+            {
+                gameObjectfactory.spawnPlayer(p);
+
+            }
             GameState.Instance.Players = game.Players;
+
             GameState.Instance.Resources = new List<Resource>(game.Players.Find(p => p.Id == GameState.Instance.PlayerId).Resources);
             Debug.Log("Found current game with id " + game.Id);
         }));
@@ -100,7 +109,12 @@ public class GameService : MonoBehaviour {
 
         StartCoroutine(HttpRequestService.Instance.GetCards(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, cards =>
         {
-            GameState.Instance.Cards = new List<Card>(cards);
+            var newCards = mergeNewCardsWithCurrent(cards);
+            foreach (Card card in newCards)
+            {
+                gameObjectfactory.spawnCard(card);
+                GameState.Instance.Cards.Add(card);
+            }
             cards.ForEach(card => Debug.Log(card.Name));
         }));
     }
@@ -118,23 +132,19 @@ public class GameService : MonoBehaviour {
         }));
     }
 
-    public void PlayCard(int cardId)
+    public void PlayCard(int cardId, int targetPlayerId)
     {
         PlayerRequired();
         GameRequired();
         TurnRequired();
         CardRequired(cardId);
 
-        if (cardId == -1 && GameState.Instance.Cards.Count > 0)
-        {
-            cardId = GameState.Instance.Cards[0].Id;
-        }
-
-        StartCoroutine(HttpRequestService.Instance.PlayCard(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, cardId, GameState.Instance.PlayerId.Value, () =>
+        StartCoroutine(HttpRequestService.Instance.PlayCard(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, cardId, targetPlayerId, () =>
         {
             Card card = GameState.Instance.Cards.Find(c => c.Id == cardId);
-            Debug.Log("Played card with id " + card.Id + ", "+ card.Name);
+            Debug.Log("Played card with id " + card.Id + ", "+ card.Name + "targeting player " + targetPlayerId);
             GameState.Instance.Cards.Remove(card);
+            gameObjectfactory.destroyOneCardWithId(card.Id);
         }));
     }
 
@@ -168,5 +178,31 @@ public class GameService : MonoBehaviour {
         {
             throw new Exception("Card required. Query cards first!");
         }
+    }
+
+    private List<Card> mergeNewCardsWithCurrent(List<Card> newCards)
+    {
+        List<Card> newCardsAfterMerge = new List<Card>();
+        Dictionary<Card, int> newCardDictionary = new Dictionary<Card, int>();
+        newCards.ForEach(card => newCardDictionary[card] = 0);
+        newCards.ForEach(card => newCardDictionary[card]++);
+
+        foreach (Card currentCard in GameState.Instance.Cards) 
+        {
+            if (newCardDictionary.ContainsKey(currentCard) && newCardDictionary[currentCard] > 0)
+            {
+                newCardDictionary[currentCard]--;
+            }
+        }
+
+        foreach (Card newCard in newCardDictionary.Keys)
+        {
+            for (int amount = newCardDictionary[newCard]; amount > 0; amount--)
+            {
+                newCardsAfterMerge.Add(newCard);
+            }
+        }
+
+        return newCardsAfterMerge;
     }
 }

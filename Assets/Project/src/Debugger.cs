@@ -10,8 +10,10 @@ public class Debugger : MonoBehaviour {
     public int? gameId;
     public int? turnId;
 
-	// Use this for initialization
-	void Start () {
+    public GameObjectFactory gameObjectfactory;
+
+    // Use this for initialization
+    void Start () {
 		
 	}
 	
@@ -47,22 +49,11 @@ public class Debugger : MonoBehaviour {
                 GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), resource.Type.ToString() + " : " + resource.Amount);
             }
         }
-
-        GUI.Label(new Rect(10, elementCounter++ * elementOffset + ++sectionCounter * sectionOffset, width, normalHeight), "Cards ---------------- ");
-        foreach (Card card in GameState.Instance.Cards)
-        {
-            GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), card.Name);
-            GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, largeHeight), card.Description);
-
-            foreach (Resource cost in card.Costs)
-            {
-                GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), cost.Type.ToString() + " : "+  cost.Amount);
-            }
-        }
     }
 
     public void Reset()
     {
         GameState.Instance.Reset();
+        gameObjectfactory.destroyAll();
     }
 }
