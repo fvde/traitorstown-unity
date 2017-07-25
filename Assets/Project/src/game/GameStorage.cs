@@ -8,21 +8,26 @@ using UnityEngine;
 
 namespace Traitorstown.src.game
 {
-    public class GameState
+    public class GameStorage
     {
+        public event EventHandler StateChanged;
+
+        private readonly string USERNAME_IDENTIFIER = "username";
         private readonly string PLAYER_ID_IDENTIFIER = "playerId";
         private readonly string GAME_ID_IDENTIFIER = "gameId";
         private readonly string TURN_COUNTER_IDENTIFIER = "turnCounter";
 
-        private static GameState instance = new GameState();
+        private static GameStorage instance = new GameStorage();
 
-        public static GameState Instance
+        public static GameStorage Instance
         {
             get
             {
                 return instance;
             }
         }
+
+        public List<Game> OpenGames = new List<Game>();
 
         public int? PlayerId
         {
@@ -105,15 +110,39 @@ namespace Traitorstown.src.game
             }
         }
 
+        public String UserName
+        {
+            get
+            {
+                return PlayerPrefs.GetString(USERNAME_IDENTIFIER);
+            }
+            set
+            {
+                if (value != null)
+                {
+                    PlayerPrefs.SetString(USERNAME_IDENTIFIER, value);
+                }
+                else
+                {
+                    PlayerPrefs.DeleteKey(USERNAME_IDENTIFIER);
+                }
+            }
+        }
+
         public List<Player> Players { get; set; }
         public List<Card> Cards { get; set; }
         public List<Resource> Resources { get; set; }
 
-        private GameState()
+        private GameStorage()
         {
             Players = new List<Player>();
             Cards = new List<Card>();
             Resources = new List<Resource>();
+        }
+
+        public void NotifyListeners()
+        {
+            StateChanged?.Invoke(this, null);
         }
 
         public void Reset()
@@ -121,9 +150,14 @@ namespace Traitorstown.src.game
             Players.Clear();
             Cards.Clear();
             Resources.Clear();
-            PlayerId = null;
             GameId = null;
             TurnCounter = null;
+        }
+
+        public void ResetUser()
+        {
+            UserName = null;
+            PlayerId = null;
         }
     }
 }

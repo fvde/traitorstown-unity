@@ -1,156 +1,177 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Traitorstown.src.game;
+using Traitorstown.src.game.state;
 using Traitorstown.src.http;
 using Traitorstown.src.http.representation;
 using Traitorstown.src.model;
 using UnityEngine;
 
-public class GameService : MonoBehaviour {
+public class GameService {
 
-    private List<Game> openGames = new List<Game>();
-    public GameObjectFactory gameObjectfactory;
+    public EventHandler<Boolean> OperationFinished;
+    private static GameService instance = new GameService();
 
-    public void GetCurrentGame()
+    public static GameService Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
+    public IEnumerator GetCurrentGame()
     {
         PlayerRequired();
 
-        GameState.Instance.GameId = null;
-        StartCoroutine(HttpRequestService.Instance.GetCurrentGame(GameState.Instance.PlayerId.Value, game =>
+        GameStorage.Instance.GameId = null;
+        yield return HttpRequestService.Instance.GetCurrentGame(GameStorage.Instance.PlayerId.Value, game =>
         {
-            GameState.Instance.GameId = game.Id;
-            GameState.Instance.TurnCounter = game.Turn;
+            GameStorage.Instance.GameId = game.Id;
+            GameStorage.Instance.TurnCounter = game.Turn;
 
-            foreach (Player p in game.Players.FindAll(player => !GameState.Instance.Players.Contains(player)))
+            foreach (Player p in game.Players.FindAll(player => !GameStorage.Instance.Players.Contains(player)))
             {
-                gameObjectfactory.spawnPlayer(p);
+                GameObjectFactory.Instance.spawnPlayer(p);
 
             }
-            GameState.Instance.Players = game.Players;
+            GameStorage.Instance.Players = game.Players;
 
-            GameState.Instance.Resources = new List<Resource>(game.Players.Find(p => p.Id == GameState.Instance.PlayerId).Resources);
+            GameStorage.Instance.Resources = new List<Resource>(game.Players.Find(p => p.Id == GameStorage.Instance.PlayerId).Resources);
             Debug.Log("Found current game with id " + game.Id);
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void CreateNewGame()
+    public IEnumerator CreateNewGame()
     {
-        StartCoroutine(HttpRequestService.Instance.CreateNewGame(game =>
+        yield return HttpRequestService.Instance.CreateNewGame(game =>
         {
-            Debug.Log("Started game with id " + game.Id);
-        }));
+            Debug.Log("Created game with id " + game.Id);
+            GameStorage.Instance.OpenGames.Add(game);
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void GetOpenGames()
+    public IEnumerator GetOpenGames()
     {
-        StartCoroutine(HttpRequestService.Instance.GetOpenGames(games =>
+        yield return HttpRequestService.Instance.GetOpenGames(games =>
         {
             Debug.Log("Found open games:");
-            openGames = new List<Game>(games);
+            GameStorage.Instance.OpenGames = new List<Game>(games);
             games.ForEach(game => Debug.Log(game));
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void JoinGame(int gameId)
+    public IEnumerator JoinGame(int gameId)
     {
         PlayerRequired();
 
-        if (gameId == -1 && openGames.Count > 0)
+        if (gameId == -1 && GameStorage.Instance.OpenGames.Count > 0)
         {
-            gameId = openGames[0].Id;
+            gameId = GameStorage.Instance.OpenGames[0].Id;
         }
 
-        StartCoroutine(HttpRequestService.Instance.JoinGame(gameId, GameState.Instance.PlayerId.Value, game =>
+        yield return HttpRequestService.Instance.JoinGame(gameId, GameStorage.Instance.PlayerId.Value, game =>
         {
-            GameState.Instance.GameId = game.Id;
+            GameStorage.Instance.GameId = game.Id;
             Debug.Log("Joined game with id " + game.Id);
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void LeaveGame()
+    public IEnumerator LeaveGame()
     {
         PlayerRequired();
         GameRequired();
 
-        StartCoroutine(HttpRequestService.Instance.LeaveGame(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, game =>
+        yield return HttpRequestService.Instance.LeaveGame(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, game =>
         {
-            GameState.Instance.GameId = null;
+            GameStorage.Instance.GameId = null;
             Debug.Log("Left game with id " + game.Id);
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void SetReady()
+    public IEnumerator SetReady()
     {
         PlayerRequired();
         GameRequired();
 
-        StartCoroutine(HttpRequestService.Instance.SetReady(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, true, game =>
+        yield return HttpRequestService.Instance.SetReady(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, true, game =>
         {
             Debug.Log("Set ready to start game with id " + game.Id);
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void SetNotReady()
+    public IEnumerator SetNotReady()
     {
         PlayerRequired();
         GameRequired();
 
-        StartCoroutine(HttpRequestService.Instance.SetReady(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, false, game =>
+        yield return HttpRequestService.Instance.SetReady(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, false, game =>
         {
             Debug.Log("Not ready to start game with id " + game.Id);
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void GetCards()
+    public IEnumerator GetCards()
     {
         PlayerRequired();
         GameRequired();
 
-        StartCoroutine(HttpRequestService.Instance.GetCards(GameState.Instance.GameId.Value, GameState.Instance.PlayerId.Value, cards =>
+        yield return HttpRequestService.Instance.GetCards(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, cards =>
         {
             var newCards = mergeNewCardsWithCurrent(cards);
             foreach (Card card in newCards)
             {
-                gameObjectfactory.spawnCard(card);
-                GameState.Instance.Cards.Add(card);
+                GameObjectFactory.Instance.spawnCard(card);
+                GameStorage.Instance.Cards.Add(card);
             }
             cards.ForEach(card => Debug.Log(card.Name));
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void GetCurrentTurn()
+    public IEnumerator GetCurrentTurn()
     {
         PlayerRequired();
         GameRequired();
         TurnRequired();
 
-        StartCoroutine(HttpRequestService.Instance.GetTurn(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, turn =>
+        yield return HttpRequestService.Instance.GetTurn(GameStorage.Instance.GameId.Value, GameStorage.Instance.TurnCounter.Value, turn =>
         {
-            GameState.Instance.TurnCounter = turn.Counter;
+            GameStorage.Instance.TurnCounter = turn.Counter;
             Debug.Log("Game's current turn is " + turn.Counter);
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
-    public void PlayCard(int cardId, int targetPlayerId)
+    public IEnumerator PlayCard(int cardId, int targetPlayerId)
     {
         PlayerRequired();
         GameRequired();
         TurnRequired();
         CardRequired(cardId);
 
-        StartCoroutine(HttpRequestService.Instance.PlayCard(GameState.Instance.GameId.Value, GameState.Instance.TurnCounter.Value, cardId, targetPlayerId, () =>
+        yield return HttpRequestService.Instance.PlayCard(GameStorage.Instance.GameId.Value, GameStorage.Instance.TurnCounter.Value, cardId, targetPlayerId, () =>
         {
-            Card card = GameState.Instance.Cards.Find(c => c.Id == cardId);
+            Card card = GameStorage.Instance.Cards.Find(c => c.Id == cardId);
             Debug.Log("Played card with id " + card.Id + ", "+ card.Name + "targeting player " + targetPlayerId);
-            GameState.Instance.Cards.Remove(card);
-            gameObjectfactory.destroyOneCardWithId(card.Id);
-        }));
+            GameStorage.Instance.Cards.Remove(card);
+            GameObjectFactory.Instance.destroyOneCardWithId(card.Id);
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 
     private void PlayerRequired()
     {
-        if (!GameState.Instance.PlayerId.HasValue)
+        if (!GameStorage.Instance.PlayerId.HasValue)
         {
             throw new Exception("Player required. Login or Register.");
         }
@@ -158,7 +179,7 @@ public class GameService : MonoBehaviour {
 
     private void GameRequired()
     {
-        if (!GameState.Instance.GameId.HasValue)
+        if (!GameStorage.Instance.GameId.HasValue)
         {
             throw new Exception("Game required. Join a game!");
         }
@@ -166,15 +187,15 @@ public class GameService : MonoBehaviour {
 
     private void TurnRequired()
     {
-        if (!GameState.Instance.TurnCounter.HasValue)
+        if (!GameStorage.Instance.TurnCounter.HasValue)
         {
             throw new Exception("Turn required. Query game first!");
         }
     }
 
-    public void CardRequired(int cardId)
+    private void CardRequired(int cardId)
     {
-        if (cardId == -1 && GameState.Instance.Cards.Count == 0)
+        if (cardId == -1 && GameStorage.Instance.Cards.Count == 0)
         {
             throw new Exception("Card required. Query cards first!");
         }
@@ -187,7 +208,7 @@ public class GameService : MonoBehaviour {
         newCards.ForEach(card => newCardDictionary[card] = 0);
         newCards.ForEach(card => newCardDictionary[card]++);
 
-        foreach (Card currentCard in GameState.Instance.Cards) 
+        foreach (Card currentCard in GameStorage.Instance.Cards) 
         {
             if (newCardDictionary.ContainsKey(currentCard) && newCardDictionary[currentCard] > 0)
             {

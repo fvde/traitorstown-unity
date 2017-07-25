@@ -8,23 +8,36 @@ using Traitorstown.src.http.request;
 using Traitorstown.src.model;
 using UnityEngine;
 
-public class UserService : MonoBehaviour {
+public class UserService {
 
-    public void Register(string username)
+    private static UserService instance = new UserService();
+
+    public static UserService Instance
     {
-        StartCoroutine(HttpRequestService.Instance.Register(username, username + DateTime.Now.Millisecond, playerId =>
+        get
         {
-            GameState.Instance.PlayerId = playerId;
-            Debug.Log("Obtained player id " + playerId);
-        }));
+            return instance;
+        }
     }
 
-    public void Login(string username)
+    public IEnumerator Register(string username)
     {
-        StartCoroutine(HttpRequestService.Instance.Login(username, username, playerId =>
+        yield return HttpRequestService.Instance.Register(username + DateTime.Now.Millisecond, username + DateTime.Now.Millisecond, playerId =>
         {
-            GameState.Instance.PlayerId = playerId;
+            GameStorage.Instance.PlayerId = playerId;
+            GameStorage.Instance.UserName = username;
+            Debug.Log("Obtained player id " + playerId);
+            GameStorage.Instance.NotifyListeners();
+        });
+    }
+
+    public IEnumerator Login(string username)
+    {
+        yield return HttpRequestService.Instance.Login(username, username, playerId =>
+        {
+            GameStorage.Instance.PlayerId = playerId;
             Debug.Log("Logged in with player " + playerId);
-        }));
+            GameStorage.Instance.NotifyListeners();
+        });
     }
 }

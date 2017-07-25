@@ -12,6 +12,20 @@ public class GameObjectFactory : MonoBehaviour {
     public GameObject playerArea;
     private List<KeyValuePair<int, GameObject>> createdObjects = new List<KeyValuePair<int, GameObject>>();
 
+    private static GameObjectFactory instance;
+
+    public static GameObjectFactory Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = GameObject.FindWithTag("GameObjectFactory").GetComponent<GameObjectFactory>();
+            }
+            return instance;
+        }
+    }
+
     public void destroyAll()
     {
         createdObjects.ForEach(pair => Destroy(pair.Value));

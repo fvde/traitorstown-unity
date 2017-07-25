@@ -19,7 +19,6 @@ public class PlayerGameObject : MonoBehaviour {
 
     public void targetWithCard(int cardId)
     {
-        GameObject gameService = GameObject.FindWithTag("GameService");
-        gameService.GetComponent<GameService>().PlayCard(cardId, Id);
+        GameService.Instance.PlayCard(cardId, Id);
     }
 }

@@ -101,11 +101,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1096734872403326}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97fa54095b4d8cb4badcb4bb40a39a30, type: 3}
+  m_Script: {fileID: 11500000, guid: 5c5e35fb059f17942a5dd670d4cdb283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 0
-  gameService: {fileID: 0}
 --- !u!114 &114289432998384312
 MonoBehaviour:
   m_ObjectHideFlags: 1
