@@ -17,8 +17,8 @@ public class PlayerGameObject : MonoBehaviour {
         texts[0].text = "Player " + Id;
     }
 
-    public void targetWithCard(int cardId)
+    public void TargetWithCard(int cardId)
     {
-        GameService.Instance.PlayCard(cardId, Id);
+        StartCoroutine(GameService.Instance.PlayCard(cardId, Id));
     }
 }

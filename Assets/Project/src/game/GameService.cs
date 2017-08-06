@@ -28,8 +28,8 @@ public class GameService {
         yield return HttpRequestService.Instance.GetCurrentGame(GameStorage.Instance.PlayerId.Value, game =>
         {
             GameStorage.Instance.Game = game;
-            game.Players.FindAll(player => !GameStorage.Instance.Players.Contains(player))
-                .ForEach(player => GameObjectFactory.Instance.spawnPlayer(player));
+            game.Players.FindAll(player => !GameObjectFactory.Instance.HasCreatedPlayer(player.Id))
+                .ForEach(player => GameObjectFactory.Instance.SpawnPlayer(player));
 
             Debug.Log("Found current game with id " + game.Id);
         });
@@ -115,7 +115,7 @@ public class GameService {
             var newCards = mergeNewCardsWithCurrent(cards);
             foreach (Card card in newCards)
             {
-                GameObjectFactory.Instance.spawnCard(card);
+                GameObjectFactory.Instance.SpawnCard(card);
                 GameStorage.Instance.Cards.Add(card);
             }
             cards.ForEach(card => Debug.Log(card.Name));
@@ -144,7 +144,7 @@ public class GameService {
             Card card = GameStorage.Instance.Cards.Find(c => c.Id == cardId);
             Debug.Log("Played card with id " + card.Id + ", "+ card.Name + "targeting player " + targetPlayerId);
             GameStorage.Instance.Cards.Remove(card);
-            GameObjectFactory.Instance.destroyOneCardWithId(card.Id);
+            GameObjectFactory.Instance.DestroyOneCardWithId(card.Id);
         });
     }
 

@@ -11,6 +11,7 @@ public class GameObjectFactory : MonoBehaviour {
     public GameObject handArea;
     public GameObject playerArea;
     private List<KeyValuePair<int, GameObject>> createdObjects = new List<KeyValuePair<int, GameObject>>();
+    private Dictionary<int, GameObject> createdPlayers = new Dictionary<int, GameObject>();
 
     private static GameObjectFactory instance;
 
@@ -26,23 +27,33 @@ public class GameObjectFactory : MonoBehaviour {
         }
     }
 
-    public void destroyAll()
+    public void DestroyAll()
     {
         createdObjects.ForEach(pair => Destroy(pair.Value));
+        foreach (GameObject o in createdPlayers.Values)
+        {
+            Destroy(o);
+        }
+        createdPlayers.Clear();
         createdObjects.Clear();
     }
 
-    public void spawnPlayer(Player p)
+    public void SpawnPlayer(Player p)
     {
         GameObject player = Instantiate(playerType);
         PlayerGameObject playerGameObject = player.GetComponent<PlayerGameObject>();
         playerGameObject.Initialize(p.Id);
         player.transform.SetParent(playerArea.transform);
 
-        createdObjects.Add(new KeyValuePair<int, GameObject>(p.Id, player));
+        createdPlayers.Add(p.Id, player);
     }
 
-    public void spawnCard(Card c)
+    public bool HasCreatedPlayer(int id)
+    {
+        return createdPlayers.ContainsKey(id);
+    }
+
+    public void SpawnCard(Card c)
     {
         GameObject card = Instantiate(cardType);
         CardGameObject cardGameObject = card.GetComponent<CardGameObject>();
@@ -53,9 +64,10 @@ public class GameObjectFactory : MonoBehaviour {
         createdObjects.Add(new KeyValuePair<int, GameObject>(c.Id, card));
     }
 
-    public void destroyOneCardWithId(int id)
+    public void DestroyOneCardWithId(int id)
     {
         int toBeRemoved = createdObjects.FindIndex(pair => pair.Key == id);
         Destroy(createdObjects[toBeRemoved].Value);
+        createdObjects.RemoveAt(toBeRemoved);
     }
 }

@@ -22,7 +22,7 @@ public class Debugger : MonoBehaviour {
     public void Reset()
     {
         GameStorage.Instance.Reset();
-        GameObjectFactory.Instance.destroyAll();
+        GameObjectFactory.Instance.DestroyAll();
     }
 
     public void ResetUser()

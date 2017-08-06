@@ -39,7 +39,7 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
         {
             d.parentToReturnTo = this.transform;
             var player = GetComponent<PlayerGameObject>();
-            player?.targetWithCard(eventData.pointerDrag.GetComponent<CardGameObject>().Id);
+            player?.TargetWithCard(eventData.pointerDrag.GetComponent<CardGameObject>().Id);
         }
 
     }
