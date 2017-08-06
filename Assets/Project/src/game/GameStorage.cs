@@ -74,12 +74,13 @@ namespace Traitorstown.src.game
         public List<Player> Players { get; private set; }
         public List<Card> Cards { get; set; }
         public List<Resource> Resources { get; private set; }
+        private Game game;
         public Game Game
         {
-            get { return Game; }
+            get { return game; }
             set
             {
-                Game = value;
+                game = value;
                 if (value != null)
                 {
                     GameId = value.Id;

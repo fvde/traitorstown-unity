@@ -17,10 +17,10 @@ namespace Traitorstown.src.game.state
             if (turn != storage.Game.Turn)
             {
                 manager.GetCards();
-                return new Playing();
+                turn = storage.Game.Turn;
+                return this;
             }
 
-            turn = storage.Game.Turn;
             manager.GetCurrentGame();
             return this;
         }

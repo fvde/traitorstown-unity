@@ -12,7 +12,6 @@ namespace Traitorstown.src.game
     public class GameManager : MonoBehaviour
     {
         public GameState GameState;
-        private GameStorage GameStorage = GameStorage.Instance;
 
         void Start()
         {
@@ -24,13 +23,13 @@ namespace Traitorstown.src.game
         {
             if (GameState.IsReadyToTransition(Time.deltaTime))
             {
-                GameState = GameState.Transition(GameStorage, this);
+                GameState = GameState.Transition(GameStorage.Instance, this);
             }
         }
 
         public void Play()
         {
-            GameStorage.Reset();
+            GameStorage.Instance.Reset();
             GameState = new LookingForGame();
         }
 
@@ -81,7 +80,7 @@ namespace Traitorstown.src.game
 
         public void GetCards()
         {
-            StartCoroutine(GameService.Instance.LeaveGame());
+            StartCoroutine(GameService.Instance.GetCards());
         }
 
         public void Register(string username)
