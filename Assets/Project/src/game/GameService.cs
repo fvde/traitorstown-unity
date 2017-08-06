@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class GameService {
 
-    public EventHandler<Boolean> OperationFinished;
     private static GameService instance = new GameService();
 
     public static GameService Instance
@@ -26,22 +25,13 @@ public class GameService {
     {
         PlayerRequired();
 
-        GameStorage.Instance.GameId = null;
         yield return HttpRequestService.Instance.GetCurrentGame(GameStorage.Instance.PlayerId.Value, game =>
         {
-            GameStorage.Instance.GameId = game.Id;
-            GameStorage.Instance.TurnCounter = game.Turn;
+            GameStorage.Instance.Game = game;
+            game.Players.FindAll(player => !GameStorage.Instance.Players.Contains(player))
+                .ForEach(player => GameObjectFactory.Instance.spawnPlayer(player));
 
-            foreach (Player p in game.Players.FindAll(player => !GameStorage.Instance.Players.Contains(player)))
-            {
-                GameObjectFactory.Instance.spawnPlayer(p);
-
-            }
-            GameStorage.Instance.Players = game.Players;
-
-            GameStorage.Instance.Resources = new List<Resource>(game.Players.Find(p => p.Id == GameStorage.Instance.PlayerId).Resources);
             Debug.Log("Found current game with id " + game.Id);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -51,7 +41,6 @@ public class GameService {
         {
             Debug.Log("Created game with id " + game.Id);
             GameStorage.Instance.OpenGames.Add(game);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -61,8 +50,8 @@ public class GameService {
         {
             Debug.Log("Found open games:");
             GameStorage.Instance.OpenGames = new List<Game>(games);
+            GameStorage.Instance.OpenGames.Sort((a, b) => a.GetReadyPlayerCount().CompareTo(b.GetReadyPlayerCount()));
             games.ForEach(game => Debug.Log(game));
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -77,9 +66,8 @@ public class GameService {
 
         yield return HttpRequestService.Instance.JoinGame(gameId, GameStorage.Instance.PlayerId.Value, game =>
         {
-            GameStorage.Instance.GameId = game.Id;
+            GameStorage.Instance.Game = game;
             Debug.Log("Joined game with id " + game.Id);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -90,9 +78,8 @@ public class GameService {
 
         yield return HttpRequestService.Instance.LeaveGame(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, game =>
         {
-            GameStorage.Instance.GameId = null;
+            GameStorage.Instance.Game = null;
             Debug.Log("Left game with id " + game.Id);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -104,7 +91,6 @@ public class GameService {
         yield return HttpRequestService.Instance.SetReady(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, true, game =>
         {
             Debug.Log("Set ready to start game with id " + game.Id);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -116,7 +102,6 @@ public class GameService {
         yield return HttpRequestService.Instance.SetReady(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, false, game =>
         {
             Debug.Log("Not ready to start game with id " + game.Id);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -134,7 +119,6 @@ public class GameService {
                 GameStorage.Instance.Cards.Add(card);
             }
             cards.ForEach(card => Debug.Log(card.Name));
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -142,13 +126,10 @@ public class GameService {
     {
         PlayerRequired();
         GameRequired();
-        TurnRequired();
 
-        yield return HttpRequestService.Instance.GetTurn(GameStorage.Instance.GameId.Value, GameStorage.Instance.TurnCounter.Value, turn =>
+        yield return HttpRequestService.Instance.GetTurn(GameStorage.Instance.GameId.Value, GameStorage.Instance.Game.Turn, turn =>
         {
-            GameStorage.Instance.TurnCounter = turn.Counter;
             Debug.Log("Game's current turn is " + turn.Counter);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -156,16 +137,14 @@ public class GameService {
     {
         PlayerRequired();
         GameRequired();
-        TurnRequired();
         CardRequired(cardId);
 
-        yield return HttpRequestService.Instance.PlayCard(GameStorage.Instance.GameId.Value, GameStorage.Instance.TurnCounter.Value, cardId, targetPlayerId, () =>
+        yield return HttpRequestService.Instance.PlayCard(GameStorage.Instance.GameId.Value, GameStorage.Instance.Game.Turn, cardId, targetPlayerId, () =>
         {
             Card card = GameStorage.Instance.Cards.Find(c => c.Id == cardId);
             Debug.Log("Played card with id " + card.Id + ", "+ card.Name + "targeting player " + targetPlayerId);
             GameStorage.Instance.Cards.Remove(card);
             GameObjectFactory.Instance.destroyOneCardWithId(card.Id);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -182,14 +161,6 @@ public class GameService {
         if (!GameStorage.Instance.GameId.HasValue)
         {
             throw new Exception("Game required. Join a game!");
-        }
-    }
-
-    private void TurnRequired()
-    {
-        if (!GameStorage.Instance.TurnCounter.HasValue)
-        {
-            throw new Exception("Turn required. Query game first!");
         }
     }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Traitorstown.src.game.state;
+using Traitorstown.src.http;
 using UnityEngine;
 
 namespace Traitorstown.src.game
@@ -16,25 +17,31 @@ namespace Traitorstown.src.game
         void Start()
         {
             GameState = new StartingGame();
-            UpdateState();
-            GameStorage.StateChanged += HandleStateChanged;
+            HttpRequestService.Instance.RequestUnsuccessful += HandleRequestUnsuccessful;
+        }
+
+        public void Update()
+        {
+            if (GameState.IsReadyToTransition(Time.deltaTime))
+            {
+                GameState = GameState.Transition(GameStorage, this);
+            }
         }
 
         public void Play()
         {
             GameStorage.Reset();
             GameState = new LookingForGame();
-            UpdateState();
-        }
-
-        public void UpdateState()
-        {
-            GameState = GameState.Transition(GameStorage, this);
         }
 
         private void HandleStateChanged(object sender, EventArgs e)
         {
-            UpdateState();
+
+        }
+
+        private void HandleRequestUnsuccessful(object sender, RequestResponse e)
+        {
+            Debug.Log("Request failed with respone " + e.ToString());
         }
 
         internal void CreateNewGame()

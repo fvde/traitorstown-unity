@@ -18,6 +18,11 @@ namespace Traitorstown.src.model
             Turn = turn;
             Players = players;
         }
+
+        public int GetReadyPlayerCount()
+        {
+            return Players.FindAll(player => player.Ready).Count;
+        }
     }
 }
 

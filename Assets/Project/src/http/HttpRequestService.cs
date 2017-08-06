@@ -13,6 +13,7 @@ namespace Traitorstown.src.http
 {
     public class HttpRequestService
     {
+        public event EventHandler<RequestResponse> RequestUnsuccessful;
         public string token = null;
         private readonly string TOKEN = "token";
 
@@ -215,6 +216,7 @@ namespace Traitorstown.src.http
             if (request.isNetworkError)
             {
                 Debug.Log("Error: " + request.error);
+                RequestUnsuccessful?.Invoke(this, new RequestResponse(-1, request.error));
             }
             else
             {
@@ -223,6 +225,9 @@ namespace Traitorstown.src.http
                 {
                     responseHandler?.Invoke(request.downloadHandler.text);
                     callback?.Invoke();
+                } else
+                {
+                    RequestUnsuccessful?.Invoke(this, new RequestResponse(request.responseCode, request.downloadHandler?.text));
                 }
             }
         }

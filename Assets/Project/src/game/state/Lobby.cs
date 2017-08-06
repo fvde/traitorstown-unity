@@ -1,33 +1,32 @@
 ﻿using System;
+using Traitorstown.src.model;
 
 namespace Traitorstown.src.game.state
 {
     public class Lobby : GameState
     {
-        private DateTime lastCheckForReadyGame = DateTime.Now;
-
         protected override GameState Evaluate(GameStorage storage, GameManager manager)
         {
             // left game
-            if (!storage.GameId.HasValue)
+            if (storage.Game == null)
             {
                 return new MainMenu();
             }
 
             // start playing
-            if (storage.TurnCounter.HasValue)
+            if (storage.Game != null && storage.Game.Status == GameStatus.PLAYING)
             {
                 return new Playing();
             }
-            
-            // check if game started
-            if ((DateTime.Now - lastCheckForReadyGame).Seconds > 5)
-            {
-                lastCheckForReadyGame = DateTime.Now;
-                manager.GetCurrentGame();
-            }
 
+            // check if game started
+            manager.GetCurrentGame();
             return this;
+        }
+
+        protected override float GetUpdateFrequencyInSeconds()
+        {
+            return 5f;
         }
     }
 }

@@ -34,5 +34,10 @@ namespace Traitorstown.src.game.state
                 return this;
             }
         }
+
+        protected override float GetUpdateFrequencyInSeconds()
+        {
+            return 2f;
+        }
     }
 }

@@ -10,12 +10,8 @@ namespace Traitorstown.src.game
 {
     public class GameStorage
     {
-        public event EventHandler StateChanged;
-
         private readonly string USERNAME_IDENTIFIER = "username";
         private readonly string PLAYER_ID_IDENTIFIER = "playerId";
-        private readonly string GAME_ID_IDENTIFIER = "gameId";
-        private readonly string TURN_COUNTER_IDENTIFIER = "turnCounter";
 
         private static GameStorage instance = new GameStorage();
 
@@ -26,8 +22,6 @@ namespace Traitorstown.src.game
                 return instance;
             }
         }
-
-        public List<Game> OpenGames = new List<Game>();
 
         public int? PlayerId
         {
@@ -56,60 +50,6 @@ namespace Traitorstown.src.game
             }
         }
 
-        public int? GameId
-        {
-            get
-            {
-                if (PlayerPrefs.HasKey(GAME_ID_IDENTIFIER))
-                {
-                    return PlayerPrefs.GetInt(GAME_ID_IDENTIFIER);
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                if (value.HasValue)
-                {
-                    PlayerPrefs.SetInt(GAME_ID_IDENTIFIER, value.Value);
-                }
-                else
-                {
-                    PlayerPrefs.DeleteKey(GAME_ID_IDENTIFIER);
-                }
-            }
-        }
-
-        public int? TurnCounter
-        {
-            get
-            {
-                if (PlayerPrefs.HasKey(TURN_COUNTER_IDENTIFIER))
-                {
-                    return PlayerPrefs.GetInt(TURN_COUNTER_IDENTIFIER);
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                if (value.HasValue)
-                {
-                    PlayerPrefs.SetInt(TURN_COUNTER_IDENTIFIER, value.Value);
-                }
-                else
-                {
-                    PlayerPrefs.DeleteKey(TURN_COUNTER_IDENTIFIER);
-                }
-            }
-        }
-
         public String UserName
         {
             get
@@ -129,29 +69,39 @@ namespace Traitorstown.src.game
             }
         }
 
-        public List<Player> Players { get; set; }
+        public int? GameId { get; private set; }
+        public List<Game> OpenGames { get; set; }
+        public List<Player> Players { get; private set; }
         public List<Card> Cards { get; set; }
-        public List<Resource> Resources { get; set; }
+        public List<Resource> Resources { get; private set; }
+        public Game Game
+        {
+            get { return Game; }
+            set
+            {
+                Game = value;
+                if (value != null)
+                {
+                    GameId = value.Id;
+                    Players = value.Players;
+                    Resources = value.Players.Find(p => p.Id == PlayerId).Resources;
+                }
+            }
+        }
 
         private GameStorage()
         {
-            Players = new List<Player>();
-            Cards = new List<Card>();
-            Resources = new List<Resource>();
-        }
-
-        public void NotifyListeners()
-        {
-            StateChanged?.Invoke(this, null);
+            Reset();
         }
 
         public void Reset()
         {
-            Players.Clear();
-            Cards.Clear();
-            Resources.Clear();
+            Players = new List<Player>();
+            Cards = new List<Card>();
+            Resources = new List<Resource>();
+            OpenGames = new List<Game>();
+            Game = null;
             GameId = null;
-            TurnCounter = null;
         }
 
         public void ResetUser()

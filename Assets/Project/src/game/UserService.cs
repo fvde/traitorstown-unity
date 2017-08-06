@@ -27,7 +27,6 @@ public class UserService {
             GameStorage.Instance.PlayerId = playerId;
             GameStorage.Instance.UserName = username;
             Debug.Log("Obtained player id " + playerId);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 
@@ -37,7 +36,6 @@ public class UserService {
         {
             GameStorage.Instance.PlayerId = playerId;
             Debug.Log("Logged in with player " + playerId);
-            GameStorage.Instance.NotifyListeners();
         });
     }
 }
