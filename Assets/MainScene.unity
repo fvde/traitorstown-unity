@@ -1525,6 +1525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnId: 0
+  day: 0
 --- !u!4 &1973885057
 Transform:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ namespace Traitorstown.src.game
 {
     public class GameStorage
     {
+        public event EventHandler GameUpdated;
         private readonly string USERNAME_IDENTIFIER = "username";
         private readonly string PLAYER_ID_IDENTIFIER = "playerId";
 
@@ -86,6 +87,7 @@ namespace Traitorstown.src.game
                     GameId = value.Id;
                     Players = value.Players;
                     Resources = value.Players.Find(p => p.Id == PlayerId).Resources;
+                    GameUpdated?.Invoke(this, null);
                 }
             }
         }

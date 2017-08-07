@@ -11,7 +11,7 @@ namespace Traitorstown.src.game.state
         {
             if (storage.Game.Status == GameStatus.FINISHED)
             {
-                return new MainMenu();
+                return new GameOver();
             }
 
             if (turn != storage.Game.Turn)
@@ -27,7 +27,8 @@ namespace Traitorstown.src.game.state
 
         protected override float GetUpdateFrequencyInSeconds()
         {
-            return 5f;
+            // TODO change to be higher after testing
+            return 2f;
         }
     }
 }

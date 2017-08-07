@@ -10,12 +10,14 @@ namespace Traitorstown.src.model
         public int Id { get; }
         public bool Ready { get; }
         public List<Resource> Resources;
+        public List<Effect> ActiveEffects;
 
-        public Player(int id, bool ready, List<Resource> resources)
+        public Player(int id, bool ready, List<Resource> resources, List<Effect> activeEffects)
         {
             Id = id;
             Ready = ready;
             Resources = resources;
+            ActiveEffects = activeEffects;
         }
 
         public bool Equals(Player other)

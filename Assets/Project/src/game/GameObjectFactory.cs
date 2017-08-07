@@ -42,7 +42,7 @@ public class GameObjectFactory : MonoBehaviour {
     {
         GameObject player = Instantiate(playerType);
         PlayerGameObject playerGameObject = player.GetComponent<PlayerGameObject>();
-        playerGameObject.Initialize(p.Id);
+        playerGameObject.Initialize(p);
         player.transform.SetParent(playerArea.transform);
 
         createdPlayers.Add(p.Id, player);

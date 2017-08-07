@@ -31,6 +31,8 @@ public class GameService {
             game.Players.FindAll(player => !GameObjectFactory.Instance.HasCreatedPlayer(player.Id))
                 .ForEach(player => GameObjectFactory.Instance.SpawnPlayer(player));
 
+
+
             Debug.Log("Found current game with id " + game.Id);
         });
     }

@@ -9,13 +9,15 @@ namespace Traitorstown.src.model
         public int Id { get; }
         public GameStatus Status { get; }
         public int Turn { get; }
+        public Role Winner { get; }
         public List<Player> Players { get; }
 
-        public Game(int id, GameStatus status, int turn, List<Player> players)
+        public Game(int id, GameStatus status, int turn, Role winner, List<Player> players)
         {
             Id = id;
             Status = status;
             Turn = turn;
+            Winner = winner;
             Players = players;
         }
 
