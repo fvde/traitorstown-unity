@@ -27,7 +27,7 @@ namespace Traitorstown.src.game.state
 
         protected override float GetUpdateFrequencyInSeconds()
         {
-            return 10f;
+            return 5f;
         }
     }
 }
