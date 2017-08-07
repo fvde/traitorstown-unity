@@ -47,7 +47,7 @@ public class PlayerGameObject : MonoBehaviour {
         {
             GameObject text = Instantiate(TextElement);
             Text textComponent = text.GetComponent<Text>();
-            textComponent.text = effect.Name + " (" + effect.RemainingTurns + ")";
+            textComponent.text = effect.Name + (effect.RemainingTurns < 1000 ? " (" + effect.RemainingTurns + ")" : "");
             text.transform.SetParent(ContentArea.transform);
         }
     }
