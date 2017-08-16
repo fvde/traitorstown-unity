@@ -7,7 +7,7 @@ namespace Traitorstown.src.game.state
     {
         protected override GameState Evaluate(GameStorage storage, GameManager manager)
         {
-            manager.Reset();
+            manager.EndGame();
             return new MainMenu();
         }
     }

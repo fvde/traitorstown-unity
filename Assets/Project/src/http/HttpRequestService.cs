@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BestHTTP.ServerSentEvents;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Traitorstown.src;
@@ -14,6 +15,7 @@ namespace Traitorstown.src.http
     public class HttpRequestService
     {
         public event EventHandler<RequestResponse> RequestUnsuccessful;
+        private EventSource EventSource;
         public string token = null;
         private readonly string TOKEN = "token";
 
@@ -33,6 +35,41 @@ namespace Traitorstown.src.http
             {
                 token = PlayerPrefs.GetString(TOKEN);
             }
+        }
+
+        public void RegisterForServerSentEventsForGame(int game)
+        {
+            if (EventSource != null && (EventSource.State == States.Open || EventSource.State == States.Connecting))
+            {
+                return;
+            }
+
+            EventSource = new EventSource(new Uri(Configuration.API_URL + "/messages/" + game));
+            EventSource.InternalRequest.SetHeader(TOKEN, token);
+            EventSource.Open();
+            EventSource.OnOpen += HandleSSEConnect;
+            EventSource.OnMessage += HandleSSEMessage;
+            EventSource.OnError += HandleSSEError;
+        }
+
+        private void HandleSSEError(EventSource eventSource, string error)
+        {
+            Debug.Log("Error: " + error);
+        }
+
+        private void HandleSSEMessage(EventSource eventSource, Message message)
+        {
+            Debug.Log("Received message " + message);
+        }
+
+        private void HandleSSEConnect(EventSource eventSource)
+        {
+            Debug.Log("Successfully connected to " + eventSource);
+        }
+
+        public void CloseServerSentEventsConnection()
+        {
+            EventSource.Close();
         }
 
         public IEnumerator GetCurrentGame(int playerId, Action<Game> responseHandler)

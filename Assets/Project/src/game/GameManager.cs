@@ -33,10 +33,11 @@ namespace Traitorstown.src.game
             GameState = new LookingForGame();
         }
 
-        public void Reset()
+        public void EndGame()
         {
             GameStorage.Instance.Reset();
             GameObjectFactory.Instance.DestroyAll();
+            GameService.Instance.EndGame();
         }
 
         private void HandleStateChanged(object sender, EventArgs e)

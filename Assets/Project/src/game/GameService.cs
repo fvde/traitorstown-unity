@@ -31,7 +31,7 @@ public class GameService {
             game.Players.FindAll(player => !GameObjectFactory.Instance.HasCreatedPlayer(player.Id))
                 .ForEach(player => GameObjectFactory.Instance.SpawnPlayer(player));
 
-
+            HttpRequestService.Instance.RegisterForServerSentEventsForGame(game.Id);
 
             Debug.Log("Found current game with id " + game.Id);
         });
@@ -81,6 +81,7 @@ public class GameService {
         yield return HttpRequestService.Instance.LeaveGame(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, game =>
         {
             GameStorage.Instance.Game = null;
+            HttpRequestService.Instance.CloseServerSentEventsConnection();
             Debug.Log("Left game with id " + game.Id);
         });
     }
@@ -148,6 +149,11 @@ public class GameService {
             GameStorage.Instance.Cards.Remove(card);
             GameObjectFactory.Instance.DestroyOneCardWithId(card.Id);
         });
+    }
+
+    public void EndGame()
+    {
+        HttpRequestService.Instance.CloseServerSentEventsConnection();
     }
 
     private void PlayerRequired()
