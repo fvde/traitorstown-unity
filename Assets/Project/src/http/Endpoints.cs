@@ -16,5 +16,7 @@ namespace Traitorstown.src.http
         public static readonly string PLAYERS = "players";
         public static readonly string TURNS = "turns";
         public static readonly string CARDS = "cards";
+        public static readonly string MESSAGES = "messages";
+
     }
 }

@@ -13,7 +13,7 @@ namespace Traitorstown.src.game.state
 
         protected GameState()
         {
-            TimeSinceLastUpdate = GetUpdateFrequencyInSeconds();
+            TimeSinceLastUpdate = 0f;
         }
 
         public GameState Transition(GameStorage storage, GameManager manager)
@@ -35,7 +35,7 @@ namespace Traitorstown.src.game.state
         protected abstract GameState Evaluate(GameStorage storage, GameManager manager);
         protected virtual float GetUpdateFrequencyInSeconds()
         {
-            return 10f;
+            return 5f;
         }
     }
 }

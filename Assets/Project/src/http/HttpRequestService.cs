@@ -76,6 +76,14 @@ namespace Traitorstown.src.http
             EventSource.Close();
         }
 
+        public IEnumerator SendMessage(int gameId, List<int> recipients, string content, Action callback)
+        {
+            yield return MakeRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.MESSAGES + HttpResources.DELIMITER + gameId, JsonUtility.ToJson(new MessageRequest(recipients, content))),
+                "POST",
+                null,
+                callback);
+        }
+
         public IEnumerator GetCurrentGame(int playerId, Action<Game> responseHandler)
         {
             yield return GameRequest(UnityWebRequest.Get(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.PLAYERS + HttpResources.DELIMITER + playerId + HttpResources.DELIMITER + HttpResources.GAMES),

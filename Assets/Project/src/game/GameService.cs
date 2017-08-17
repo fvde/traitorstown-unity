@@ -151,6 +151,28 @@ public class GameService {
         });
     }
 
+    public IEnumerator SendMessageToAll(string content)
+    {
+        PlayerRequired();
+        GameRequired();
+
+        yield return HttpRequestService.Instance.SendMessage(GameStorage.Instance.GameId.Value, GameStorage.Instance.Game.Players.ConvertAll(p => p.Id), content, () =>
+        {
+            Debug.Log("Send message " + content);
+        });
+    }
+
+    public IEnumerator SendMessageToPlayer(string content, int playerId)
+    {
+        PlayerRequired();
+        GameRequired();
+
+        yield return HttpRequestService.Instance.SendMessage(GameStorage.Instance.GameId.Value, new List<int> { playerId }, content, () =>
+        {
+            Debug.Log("Send message " + content);
+        });
+    }
+
     public void EndGame()
     {
         HttpRequestService.Instance.CloseServerSentEventsConnection();

@@ -1,6 +1,8 @@
 ﻿using Assets.Project.src.model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Traitorstown.src;
 using Traitorstown.src.game;
 using Traitorstown.src.http;
 using Traitorstown.src.model;
@@ -22,7 +24,13 @@ public class ChatGameObject : MonoBehaviour {
     public void Send()
     {
         var textInput = TextInput.GetComponent<InputField>();
+        if (String.IsNullOrEmpty(textInput.text))
+        {
+            return;
+        }
+
         Debug.Log("Sending: " + textInput.text);
+        StartCoroutine(GameService.Instance.SendMessageToAll(textInput.text));
         textInput.text = "";
     }
 
@@ -39,8 +47,17 @@ public class ChatGameObject : MonoBehaviour {
         textComponent.text = (playerId != -1 ? "Player " + playerId + ": " : "") + content;
         text.transform.SetParent(ContentArea.transform);
 
+        ClearOldMessages();
+
         ScrollRect scrollComponent = ScrollRect.GetComponent<ScrollRect>();
-        scrollComponent.verticalNormalizedPosition = 0.0f;
+        scrollComponent.verticalNormalizedPosition = 1.0f;
+    }
+
+    private void ClearOldMessages()
+    {
+        var children = new List<Text>();
+        children.AddRange(ContentArea.GetComponentsInChildren<Text>());
+        children.GetRange(0, Mathf.Max(0, children.Count - Configuration.MAX_CHAT_MESSAGES)).ForEach(text => Destroy(text.transform.gameObject));
     }
 
     void OnDestroy()
