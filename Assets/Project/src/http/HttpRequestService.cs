@@ -15,6 +15,8 @@ namespace Traitorstown.src.http
     public class HttpRequestService
     {
         public event EventHandler<RequestResponse> RequestUnsuccessful;
+        public event EventHandler<MessageRepresentation> ServerSentEvent;
+
         private EventSource EventSource;
         public string token = null;
         private readonly string TOKEN = "token";
@@ -57,9 +59,11 @@ namespace Traitorstown.src.http
             Debug.Log("Error: " + error);
         }
 
-        private void HandleSSEMessage(EventSource eventSource, Message message)
+        private void HandleSSEMessage(EventSource eventSource, Message m)
         {
-            Debug.Log("Received message " + message);
+            Debug.Log("Received message " + m);
+            MessageRepresentation message = JsonUtility.FromJson<MessageRepresentation>(m.Data);
+            ServerSentEvent?.Invoke(this, message);
         }
 
         private void HandleSSEConnect(EventSource eventSource)
