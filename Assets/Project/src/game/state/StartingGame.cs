@@ -40,7 +40,11 @@ namespace Traitorstown.src.game.state
             {
                 if (storage.Game.Status == GameStatus.OPEN) return new Lobby();
                 if (storage.Game.Status == GameStatus.PLAYING) return new Playing();
-                if (storage.Game.Status == GameStatus.FINISHED) return new MainMenu();
+                if (storage.Game.Status == GameStatus.FINISHED)
+                {
+                    manager.EndGame();
+                    return new MainMenu();
+                }
             }
 
             return new MainMenu();

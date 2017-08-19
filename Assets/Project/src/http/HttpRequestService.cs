@@ -240,7 +240,7 @@ namespace Traitorstown.src.http
                     PlayerPrefs.SetString(TOKEN, token);
                 }
 
-                responseHandler((int)result.id);
+                responseHandler((int)result.playerId);
             });
         }
 

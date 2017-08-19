@@ -50,7 +50,7 @@ public class ChatGameObject : MonoBehaviour {
         ClearOldMessages();
 
         ScrollRect scrollComponent = ScrollRect.GetComponent<ScrollRect>();
-        scrollComponent.verticalNormalizedPosition = 1.0f;
+        scrollComponent.verticalNormalizedPosition = 0.0f;
     }
 
     private void ClearOldMessages()
