@@ -11,11 +11,9 @@ namespace Traitorstown.src.game
 {
     public class GameManager : MonoBehaviour
     {
-        public GameState GameState;
-
         void Start()
         {
-            GameState = new StartingGame();
+            GameStorage.Instance.GameState = new StartingGame();
             HttpRequestService.Instance.RequestUnsuccessful += HandleRequestUnsuccessful;
         }
 
@@ -24,21 +22,20 @@ namespace Traitorstown.src.game
             GameStorage.Instance.Reset();
             GameObjectFactory.Instance.DestroyAll();
             GameStorage.Instance.ResetUser();
-            GameState = new StartingGame();
         }
 
         public void Update()
         {
-            if (GameState.IsReadyToTransition(Time.deltaTime))
+            if (GameStorage.Instance.GameState.IsReadyToTransition(Time.deltaTime))
             {
-                GameState = GameState.Transition(GameStorage.Instance, this);
+                GameStorage.Instance.GameState = GameStorage.Instance.GameState.Transition(GameStorage.Instance, this);
             }
         }
 
         public void Play()
         {
             GameStorage.Instance.Reset();
-            GameState = new LookingForGame();
+            GameStorage.Instance.GameState = new LookingForGame();
         }
 
         public void EndGame()

@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using Traitorstown.src.game;
+using Traitorstown.src.game.state;
 using Traitorstown.src.model;
 using UnityEngine;
 
 public class Debugger : MonoBehaviour {
 
+    public GameState state;
     public int? playerId;
     public int? gameId;
     public int turnId;
@@ -21,6 +23,7 @@ public class Debugger : MonoBehaviour {
     {
         playerId = GameStorage.Instance.PlayerId.HasValue ? GameStorage.Instance.PlayerId : null;
         gameId = GameStorage.Instance.GameId.HasValue ? GameStorage.Instance.GameId : null;
+        state = GameStorage.Instance.GameState;
 
         if (GameStorage.Instance.Game != null)
         {
@@ -38,6 +41,7 @@ public class Debugger : MonoBehaviour {
         int normalHeight = 100;
         int width = 400;
 
+        GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "State: " + state != null ? state.GetType().Name.ToUpper() : "UNKNOWN");
         GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "You are player: " + playerId);
         GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "Game Id: " + gameId);
         GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), "Turn: " + turnId);
