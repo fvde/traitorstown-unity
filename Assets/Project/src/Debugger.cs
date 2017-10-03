@@ -48,16 +48,4 @@ public class Debugger : MonoBehaviour {
             GUI.Label(new Rect(10, elementCounter++ * elementOffset + sectionCounter * sectionOffset, width, normalHeight), r.Type.ToString() + ": " + r.Amount);
         }
     }
-
-
-    public void Reset()
-    {
-        GameStorage.Instance.Reset();
-        GameObjectFactory.Instance.DestroyAll();
-    }
-
-    public void ResetUser()
-    {
-        GameStorage.Instance.ResetUser();
-    }
 }

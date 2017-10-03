@@ -19,6 +19,14 @@ namespace Traitorstown.src.game
             HttpRequestService.Instance.RequestUnsuccessful += HandleRequestUnsuccessful;
         }
 
+        public void Reset()
+        {
+            GameStorage.Instance.Reset();
+            GameObjectFactory.Instance.DestroyAll();
+            GameStorage.Instance.ResetUser();
+            GameState = new StartingGame();
+        }
+
         public void Update()
         {
             if (GameState.IsReadyToTransition(Time.deltaTime))
