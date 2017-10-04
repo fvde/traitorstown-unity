@@ -193,7 +193,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 224533166238479858}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.26333332
+  m_Size: 0.5966667
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -249,6 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c5e35fb059f17942a5dd670d4cdb283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerId: 0
   ContentArea: {fileID: 1560947624568404}
   TextElement: {fileID: 1943392234731952, guid: 03450ad0e3acebd48aa8cc1749feeebd,
     type: 2}
@@ -633,7 +634,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 150, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224533166238479858
 RectTransform:
@@ -709,7 +710,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 84}
+  m_SizeDelta: {x: 150, y: 184}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &225064283877799910
 CanvasGroup:

@@ -11,6 +11,6 @@ namespace Traitorstown.src.model
     {
         GOLD,
         REPUTATION,
-        CARD
+        STOLEN_GOLD
     }
 }

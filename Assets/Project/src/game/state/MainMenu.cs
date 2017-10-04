@@ -10,7 +10,9 @@ namespace Traitorstown.src.game.state
     {
         protected override GameState Evaluate(GameStorage storage, GameManager manager)
         {
-            return this;
+            //TODO enable once menu does something
+            //return this;
+            return new LookingForGame();
         }
     }
 }

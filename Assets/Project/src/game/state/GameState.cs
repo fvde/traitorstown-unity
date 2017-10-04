@@ -35,7 +35,7 @@ namespace Traitorstown.src.game.state
         protected abstract GameState Evaluate(GameStorage storage, GameManager manager);
         protected virtual float GetUpdateFrequencyInSeconds()
         {
-            return 5f;
+            return 1f;
         }
     }
 }
