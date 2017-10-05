@@ -19,6 +19,12 @@ public class ChatGameObject : MonoBehaviour {
     void Start()
     {
         HttpRequestService.Instance.ServerSentEvent += HandleNewServerSentEvent;
+        GameStorage.Instance.ResetGamestateEvent += HandleResetGamestateEvent;
+    }
+
+    private void HandleResetGamestateEvent(object sender, EventArgs e)
+    {
+        ClearOldMessages(0);
     }
 
     public void Send()
@@ -47,21 +53,22 @@ public class ChatGameObject : MonoBehaviour {
         textComponent.text = (playerId != -1 ? "Player " + playerId + ": " : "") + content;
         text.transform.SetParent(ContentArea.transform);
 
-        ClearOldMessages();
+        ClearOldMessages(Configuration.MAX_CHAT_MESSAGES);
 
         ScrollRect scrollComponent = ScrollRect.GetComponent<ScrollRect>();
         scrollComponent.verticalNormalizedPosition = 0.0f;
     }
 
-    private void ClearOldMessages()
+    private void ClearOldMessages(int desiredRemainingMessages)
     {
         var children = new List<Text>();
         children.AddRange(ContentArea.GetComponentsInChildren<Text>());
-        children.GetRange(0, Mathf.Max(0, children.Count - Configuration.MAX_CHAT_MESSAGES)).ForEach(text => Destroy(text.transform.gameObject));
+        children.GetRange(0, Mathf.Max(0, children.Count - desiredRemainingMessages)).ForEach(text => Destroy(text.transform.gameObject));
     }
 
     void OnDestroy()
     {
         HttpRequestService.Instance.ServerSentEvent -= HandleNewServerSentEvent;
+        GameStorage.Instance.ResetGamestateEvent -= HandleResetGamestateEvent;
     }
 }

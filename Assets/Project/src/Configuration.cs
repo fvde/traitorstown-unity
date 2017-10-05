@@ -9,6 +9,6 @@ namespace Traitorstown.src
     class Configuration
     {
         public static string API_URL = "http://localhost:8080";
-        public static int MAX_CHAT_MESSAGES = 50;
+        public static int MAX_CHAT_MESSAGES = 30;
     }
 }

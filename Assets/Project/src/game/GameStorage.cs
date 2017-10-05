@@ -11,6 +11,7 @@ namespace Traitorstown.src.game
 {
     public class GameStorage
     {
+        public event EventHandler ResetGamestateEvent;
         public event EventHandler GameUpdated;
         private readonly string USERNAME_IDENTIFIER = "username";
         private readonly string PLAYER_ID_IDENTIFIER = "playerId";
@@ -108,6 +109,7 @@ namespace Traitorstown.src.game
             OpenGames = new List<Game>();
             Game = null;
             GameId = null;
+            ResetGamestateEvent?.Invoke(this, null);
         }
 
         public void ResetUser()
