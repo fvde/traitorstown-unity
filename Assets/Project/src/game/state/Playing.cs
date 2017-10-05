@@ -5,7 +5,7 @@ namespace Traitorstown.src.game.state
 {
     public class Playing : GameState
     {
-        private int turn;
+        private int turn = -1;
 
         protected override GameState Evaluate(GameStorage storage, GameManager manager)
         {
@@ -14,14 +14,14 @@ namespace Traitorstown.src.game.state
                 return new GameOver();
             }
 
+            manager.GetCurrentGame();
+
             if (turn != storage.Game.Turn)
             {
                 manager.GetCards();
                 turn = storage.Game.Turn;
-                return this;
             }
 
-            manager.GetCurrentGame();
             return this;
         }
 
