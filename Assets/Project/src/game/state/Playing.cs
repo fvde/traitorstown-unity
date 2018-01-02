@@ -9,7 +9,7 @@ namespace Traitorstown.src.game.state
 
         protected override GameState Evaluate(GameStorage storage, GameManager manager)
         {
-            if (storage.Game.Status == GameStatus.FINISHED)
+            if (storage.Game.Status == GameStatus.FINISHED || storage.Game.Status == GameStatus.CANCELLED)
             {
                 return new GameOver();
             }

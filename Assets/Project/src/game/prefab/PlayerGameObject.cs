@@ -31,9 +31,9 @@ public class PlayerGameObject : MonoBehaviour {
         }
     }
 
-    public void TargetWithCard(int cardId)
+    public void TargetWithCard(int cardId, string uuid)
     {
-        StartCoroutine(GameService.Instance.PlayCard(cardId, PlayerId));
+        StartCoroutine(GameService.Instance.PlayCard(cardId, PlayerId, uuid));
     }
 
     public void SetActiveEffects(List<Effect> effects)

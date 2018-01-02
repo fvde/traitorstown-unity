@@ -115,8 +115,11 @@ public class GameService {
 
         yield return HttpRequestService.Instance.GetCards(GameStorage.Instance.GameId.Value, GameStorage.Instance.PlayerId.Value, cards =>
         {
-            var newCards = mergeNewCardsWithCurrent(cards);
-            foreach (Card card in newCards)
+            GameObjectFactory.Instance.DestroyCards();
+            GameStorage.Instance.Cards.Clear();
+            //var newCards = mergeNewCardsWithCurrent(cards);
+
+            foreach (Card card in cards)
             {
                 GameObjectFactory.Instance.SpawnCard(card);
                 GameStorage.Instance.Cards.Add(card);
@@ -136,19 +139,24 @@ public class GameService {
         });
     }
 
-    public IEnumerator PlayCard(int cardId, int targetPlayerId)
+    public IEnumerator PlayCard(int cardId, int targetPlayerId, string cardUUID)
     {
         PlayerRequired();
         GameRequired();
         CardRequired(cardId);
 
+        Card card = GameStorage.Instance.Cards.Find(c => c.Id == cardId);
+        GameObjectFactory.Instance.DestroyCardWithUUID(cardUUID);
+
         yield return HttpRequestService.Instance.PlayCard(GameStorage.Instance.GameId.Value, GameStorage.Instance.Game.Turn, cardId, targetPlayerId, () =>
         {
-            Card card = GameStorage.Instance.Cards.Find(c => c.Id == cardId);
-            Debug.Log("Played card with id " + card.Id + ", "+ card.Name + "targeting player " + targetPlayerId);
             GameStorage.Instance.Cards.Remove(card);
-            GameObjectFactory.Instance.DestroyOneCardWithId(card.Id);
-        });
+            Debug.Log("Played card with id " + card.Id + ", " + card.Name + "targeting player " + targetPlayerId);
+        }, () =>
+         {
+             // request failed, recreate card
+             GameObjectFactory.Instance.SpawnCard(card);
+         });
     }
 
     public IEnumerator SendMessageToAll(string content)

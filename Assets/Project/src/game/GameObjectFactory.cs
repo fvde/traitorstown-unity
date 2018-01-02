@@ -10,8 +10,8 @@ public class GameObjectFactory : MonoBehaviour {
     public GameObject cardType;
     public GameObject handArea;
     public GameObject playerArea;
-    private List<KeyValuePair<int, GameObject>> createdObjects = new List<KeyValuePair<int, GameObject>>();
     private Dictionary<int, GameObject> createdPlayers = new Dictionary<int, GameObject>();
+    private Dictionary<string, GameObject> createdCards = new Dictionary<string, GameObject>();
 
     private static GameObjectFactory instance;
 
@@ -27,15 +27,10 @@ public class GameObjectFactory : MonoBehaviour {
         }
     }
 
-    public void DestroyAll()
+    public void Reset()
     {
-        createdObjects.ForEach(pair => Destroy(pair.Value));
-        foreach (GameObject o in createdPlayers.Values)
-        {
-            Destroy(o);
-        }
-        createdPlayers.Clear();
-        createdObjects.Clear();
+        DestroyPlayers();
+        DestroyCards();
     }
 
     public void SpawnPlayer(Player p)
@@ -57,17 +52,34 @@ public class GameObjectFactory : MonoBehaviour {
     {
         GameObject card = Instantiate(cardType);
         CardGameObject cardGameObject = card.GetComponent<CardGameObject>();
-        cardGameObject.Initialize(c.Id, c.Name, c.Description, c.Costs);
+        cardGameObject.Initialize(c.Id, System.Guid.NewGuid().ToString(), c.Name, c.Description, c.Costs);
 
         card.transform.SetParent(handArea.transform);
 
-        createdObjects.Add(new KeyValuePair<int, GameObject>(c.Id, card));
+        createdCards.Add(cardGameObject.UUID, card);
     }
 
-    public void DestroyOneCardWithId(int id)
+    public void DestroyPlayers()
     {
-        int toBeRemoved = createdObjects.FindIndex(pair => pair.Key == id);
-        Destroy(createdObjects[toBeRemoved].Value);
-        createdObjects.RemoveAt(toBeRemoved);
+        foreach (GameObject o in createdPlayers.Values)
+        {
+            Destroy(o);
+        }
+        createdPlayers.Clear();
+    }
+
+    public void DestroyCards()
+    {
+        foreach (GameObject o in createdCards.Values)
+        {
+            Destroy(o);
+        }
+        createdCards.Clear();
+    }
+
+    public void DestroyCardWithUUID(string uuid)
+    {
+        Destroy(createdCards[uuid]);
+        createdCards.Remove(uuid);
     }
 }

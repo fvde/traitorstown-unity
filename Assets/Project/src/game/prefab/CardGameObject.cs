@@ -7,16 +7,18 @@ using UnityEngine.UI;
 
 public class CardGameObject : MonoBehaviour {
     public int Id;
+    public String UUID;
     public string Name;
     public string Description;
     private List<Resource> Costs;
 
-    public void Initialize(int id, string name, string description, List<Resource> costs)
+    public void Initialize(int id, string uuid, string name, string description, List<Resource> costs)
     {
         Id = id;
         Name = name;
         Description = description;
         Costs = costs;
+        UUID = uuid;
     }
 
     void Start()

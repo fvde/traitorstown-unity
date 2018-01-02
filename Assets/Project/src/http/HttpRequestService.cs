@@ -148,12 +148,17 @@ namespace Traitorstown.src.http
                 null);
         }
 
-        public IEnumerator PlayCard(int gameId, int turnCounter, int cardId, int targetPlayer, Action callback)
+        public IEnumerator PlayCard(int gameId, int turnCounter, int cardId, int targetPlayer, Action callback, Action errorHandler)
         {
             yield return MakeRequest(UnityWebRequest.Put(Configuration.API_URL + HttpResources.DELIMITER + HttpResources.GAMES + HttpResources.DELIMITER + gameId + HttpResources.DELIMITER + HttpResources.TURNS + HttpResources.DELIMITER + turnCounter + HttpResources.DELIMITER + HttpResources.CARDS, JsonUtility.ToJson(new CardRequest(cardId, targetPlayer))),
                 "POST",
                 null, 
-                callback);
+                callback,
+                response =>
+                {
+                    errorHandler?.Invoke();
+                    ServerSentEvent?.Invoke(this, new MessageRepresentation(response));
+                });
         }
 
         public IEnumerator Register(string email, string password, Action<int> responseHandler)
@@ -244,9 +249,11 @@ namespace Traitorstown.src.http
             });
         }
 
-        private IEnumerator MakeRequest(UnityWebRequest request, string httpVerb, Action<object> responseHandler = null, Action callback = null)
+        private IEnumerator MakeRequest(UnityWebRequest request, string httpVerb, Action<object> responseHandler = null, Action callback = null, Action<string> errorCallback = null)
         {
             request.method = httpVerb;
+
+            Debug.Log(request.url);
 
             if (token != null)
             {
@@ -276,6 +283,7 @@ namespace Traitorstown.src.http
                     callback?.Invoke();
                 } else
                 {
+                    errorCallback?.Invoke(request.downloadHandler?.text);
                     RequestUnsuccessful?.Invoke(this, new RequestResponse(request.responseCode, request.downloadHandler?.text));
                 }
             }

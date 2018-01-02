@@ -35,9 +35,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         this.transform.position = eventData.position;
 
-        if (placeholder.transform.parent != placeholderParent)
-            placeholder.transform.SetParent(placeholderParent);
-
         int newSiblingIndex = placeholderParent.childCount;
 
         for (int i = 0; i < placeholderParent.childCount; i++)
@@ -56,6 +53,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
         placeholder.transform.SetSiblingIndex(newSiblingIndex);
 
+    }
+
+    private void OnDestroy()
+    {
+        Destroy(placeholder);
     }
 
     public void OnEndDrag(PointerEventData eventData)

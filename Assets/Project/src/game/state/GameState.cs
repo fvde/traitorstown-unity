@@ -19,9 +19,7 @@ namespace Traitorstown.src.game.state
         public GameState Transition(GameStorage storage, GameManager manager)
         {
             TimeSinceLastUpdate = 0;
-            Debug.Log("Transition from state " + this.GetType());
             var result = Evaluate(storage, manager);
-            Debug.Log("To state " + result.GetType());
             return result;
         }
 

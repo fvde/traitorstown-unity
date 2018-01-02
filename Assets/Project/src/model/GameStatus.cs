@@ -11,6 +11,7 @@ namespace Traitorstown.src.model
     {
         OPEN,
         PLAYING,
-        FINISHED
+        FINISHED,
+        CANCELLED
     }
 }

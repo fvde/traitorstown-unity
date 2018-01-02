@@ -20,7 +20,7 @@ namespace Traitorstown.src.game
         public void Reset()
         {
             GameStorage.Instance.Reset();
-            GameObjectFactory.Instance.DestroyAll();
+            GameObjectFactory.Instance.Reset();
             GameStorage.Instance.ResetUser();
         }
 
@@ -41,7 +41,7 @@ namespace Traitorstown.src.game
         public void EndGame()
         {
             GameStorage.Instance.Reset();
-            GameObjectFactory.Instance.DestroyAll();
+            GameObjectFactory.Instance.Reset();
             GameService.Instance.EndGame();
         }
 

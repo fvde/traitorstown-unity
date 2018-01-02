@@ -1,0 +1,110 @@
+warning: LF will be replaced by CRLF in Assets/MainScene.unity.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in Assets/Project/src/game/GameObjectFactory.cs.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in Assets/Project/src/game/GameService.cs.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in Assets/Project/src/game/prefab/CardGameObject.cs.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in Assets/Project/src/game/prefab/PlayerGameObject.cs.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in Assets/Project/src/ui/Draggable.cs.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in Assets/Project/src/ui/DropZone.cs.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in ProjectSettings/GraphicsSettings.asset.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in ProjectSettings/ProjectSettings.asset.
+The file will have its original line endings in your working directory.
+[1mdiff --git a/Assets/Project/src/Configuration.cs b/Assets/Project/src/Configuration.cs[m
+[1mindex 5b8ce59..7f8f8d3 100644[m
+[1m--- a/Assets/Project/src/Configuration.cs[m
+[1m+++ b/Assets/Project/src/Configuration.cs[m
+[36m@@ -9,6 +9,7 @@[m [mnamespace Traitorstown.src[m
+     class Configuration[m
+     {[m
+         public static string API_URL = "http://localhost:8080";[m
+[32m+[m[32m        //public static string API_URL = "http://api.traitorstown.com";[m
+         public static int MAX_CHAT_MESSAGES = 10;[m
+     }[m
+ }[m
+[1mdiff --git a/Assets/Project/src/game/GameManager.cs b/Assets/Project/src/game/GameManager.cs[m
+[1mindex 862c33a..9686d9d 100644[m
+[1m--- a/Assets/Project/src/game/GameManager.cs[m
+[1m+++ b/Assets/Project/src/game/GameManager.cs[m
+[36m@@ -20,7 +20,7 @@[m [mnamespace Traitorstown.src.game[m
+         public void Reset()[m
+         {[m
+             GameStorage.Instance.Reset();[m
+[31m-            GameObjectFactory.Instance.DestroyAll();[m
+[32m+[m[32m            GameObjectFactory.Instance.Reset();[m
+             GameStorage.Instance.ResetUser();[m
+         }[m
+ [m
+[36m@@ -41,7 +41,7 @@[m [mnamespace Traitorstown.src.game[m
+         public void EndGame()[m
+         {[m
+             GameStorage.Instance.Reset();[m
+[31m-            GameObjectFactory.Instance.DestroyAll();[m
+[32m+[m[32m            GameObjectFactory.Instance.Reset();[m
+             GameService.Instance.EndGame();[m
+         }[m
+ [m
+[1mdiff --git a/Assets/Project/src/game/GameObjectFactory.cs b/Assets/Project/src/game/GameObjectFactory.cs[m
+[1mindex 291e920..630a1e7 100644[m
+[1m--- a/Assets/Project/src/game/GameObjectFactory.cs[m
+[1m+++ b/Assets/Project/src/game/GameObjectFactory.cs[m
+[36m@@ -10,8 +10,8 @@[m [mpublic class GameObjectFactory : MonoBehaviour {[m
+     public GameObject cardType;[m
+     public GameObject handArea;[m
+     public GameObject playerArea;[m
+[31m-    private List<KeyValuePair<int, GameObject>> createdObjects = new List<KeyValuePair<int, GameObject>>();[m
+     private Dictionary<int, GameObject> createdPlayers = new Dictionary<int, GameObject>();[m
+[32m+[m[32m    private Dictionary<string, GameObject> createdCards = new Dictionary<string, GameObject>();[m
+ [m
+     private static GameObjectFactory instance;[m
+ [m
+[36m@@ -27,15 +27,10 @@[m [mpublic class GameObjectFactory : MonoBehaviour {[m
+         }[m
+     }[m
+ [m
+[31m-    public void DestroyAll()[m
+[32m+[m[32m    public void Reset()[m
+     {[m
+[31m-        createdObjects.ForEach(pair => Destroy(pair.Value));[m
+[31m-        foreach (GameObject o in createdPlayers.Values)[m
+[31m-        {[m
+[31m-            Destroy(o);[m
+[31m-        }[m
+[31m-        createdPlayers.Clear();[m
+[31m-        createdObjects.Clear();[m
+[32m+[m[32m        DestroyPlayers();[m
+[32m+[m[32m        DestroyCards();[m
+     }[m
+ [m
+     public void SpawnPlayer(Player p)[m
+[36m@@ -57,17 +52,34 @@[m [mpublic class GameObjectFactory : MonoBehaviour {[m
+     {[m
+         GameObject card = Instantiate(cardType);[m
+         CardGameObject cardGameObject = card.GetComponent<CardGameObject>();[m
+[31m-        cardGameObject.Initialize(c.Id, c.Name, c.Description, c.Costs);[m
+[32m+[m[32m        cardGameObject.Initialize(c.Id, System.Guid.NewGuid().ToString(), c.Name, c.Description, c.Costs);[m
+ [m
+         card.transform.SetParent(handArea.transform);[m
+ [m
+[31m-        createdObjects.Add(new KeyValuePair<int, GameObject>(c.Id, card));[m
+[32m+[m[32m        createdCards.Add(cardGameObject.UUID, card);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public void DestroyPlayers()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        foreach (GameObject o in createdPlayers.Values)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Destroy(o);[m
+[32m+[m[32m        }[m
+[32m+[m[32m        createdPlayers.Clear();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public void DestroyCards()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        foreach (GameObject o i
